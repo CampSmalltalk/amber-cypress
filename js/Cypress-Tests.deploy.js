@@ -59,9 +59,25 @@ fn: function (){
 var self=this;
 var name=nil;
 var pkg=nil;
+var packageDefinitions=nil;
+var expectedDefinitions=nil;
 (name=unescape("Cypress-Mocks"));
 (pkg=smalltalk.send(smalltalk.send((smalltalk.CypressPackage || CypressPackage), "_new", []), "_name_", [name]));
-smalltalk.send(pkg, "_snapshot", []);
+(packageDefinitions=smalltalk.send(smalltalk.send(pkg, "_snapshot", []), "_definitions", []));
+(expectedDefinitions=smalltalk.send(self, "_expectedMockDefinitions", []));
+return self;}
+}),
+smalltalk.CypressDefinitionTest);
+
+smalltalk.addMethod(
+unescape('_expectedMockDefinitions'),
+smalltalk.method({
+selector: unescape('expectedMockDefinitions'),
+fn: function (){
+var self=this;
+var className=nil;
+(className="CypressMockBasic");
+return [smalltalk.send((smalltalk.CypressClassDefinition || CypressClassDefinition), "_name_superclassName_category_instVarNames_classInstVarNames_comment_", [className, "Object", className, "name", "current", "This mock contains basic class and instance method selectors"]),smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [className, true, "initialize", "initialization", unescape("initialize%0A%09self%20current%3A%20self%20new")]),smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [className, true, "current", "accessting", unescape("current%0A%09%5Ecurrent")]),smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [className, true, "current:", "accessting", unescape("current%3A%20anObject%0A%09current%20%3A%3D%20anObject")]),smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [className, false, "initialize", "initialization", unescape("initialize%0A%09super%20initialize.%0A%09self%20name%3A%20%27Unknown%27")]),smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [className, false, "name", "accessing", unescape("name%0A%09%5Ename")]),smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [className, false, "name:", "accessing", unescape("name%3A%20aString%0A%09name%20%3A%3D%20aString")])];
 return self;}
 }),
 smalltalk.CypressDefinitionTest);

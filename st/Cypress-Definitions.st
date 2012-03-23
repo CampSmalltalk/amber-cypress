@@ -3,6 +3,20 @@ Object subclass: #CypressDefinition
 	instanceVariableNames: ''
 	category: 'Cypress-Definitions'!
 
+!CypressDefinition methodsFor: 'not yet classified'!
+
+= aDefinition
+	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
+!
+
+isRevisionOf: aDefinition
+	^ (aDefinition isKindOf: CypressDefinition) and: [aDefinition description = self description]
+!
+
+description
+	self subclassResponsibility
+! !
+
 Object subclass: #CypressPackage
 	instanceVariableNames: 'name'
 	category: 'Cypress-Definitions'!
@@ -28,7 +42,8 @@ snapshot
 	package sortedClasses do: [:cls |
         	definitions add: cls asCypressClassDefinition.
                 cls methodDictionary values do: [:method |
-			(method category match: '^\*') ifFalse: [ definitions add: method asCypressMethodDefinition ]]].
+			(method category match: '^\*') ifFalse: [ 
+				definitions add: method asCypressMethodDefinition ]]].
 	name := package name.
 	Smalltalk current classes, (Smalltalk current classes collect: [:each | each class]) do: [:each |
 		each methodDictionary values do: [:method |
@@ -50,6 +65,11 @@ Object subclass: #CypressSnapshot
 definitions: aDefinitions
 
 	definitions := aDefinitions
+!
+
+definitions
+
+	^definitions
 ! !
 
 !CypressSnapshot class methodsFor: 'not yet classified'!
@@ -65,12 +85,7 @@ CypressDefinition subclass: #CypressClassDefinition
 
 !CypressClassDefinition methodsFor: 'not yet classified'!
 
-name: aClassName 
-superclassName: aSuperclassName
-category: aCategory
-instVarNames: anInstanceVariableNames
-classInstVarNames: aClassInstanceVariableNames
-comment: aComment
+name: aClassName superclassName: aSuperclassName category: aCategory instVarNames: anInstanceVariableNames classInstVarNames: aClassInstanceVariableNames comment: aComment
 
 	name := aClassName.
 	superclassName := aSuperclassName.
@@ -78,6 +93,44 @@ comment: aComment
 	instVarNames := anInstanceVariableNames.
 	classInstVarNames := aClassInstanceVariableNames.
 	comment := aComment
+!
+
+= aDefinition
+	^(super = aDefinition)
+		and: [superclassName = aDefinition superclassName
+		and: [category = aDefinition category
+		and: [variables = aDefinition variables
+		and: [comment = aDefinition comment]]]]
+!
+
+superclassName
+
+	^superclassName
+!
+
+name
+
+	^name
+!
+
+category
+
+	^category
+!
+
+variables
+
+	^variables
+!
+
+comment
+
+	^comment
+!
+
+description
+
+	^ Array with: name
 ! !
 
 !CypressClassDefinition class methodsFor: 'not yet classified'!
@@ -104,17 +157,36 @@ CypressDefinition subclass: #CypressMethodDefinition
 
 !CypressMethodDefinition methodsFor: 'not yet classified'!
 
-className: aName
-classIsMeta: isMetaclass
-selector: aSelector
-category: aCategory
-source: aSource
+className: aName classIsMeta: isMetaclass selector: aSelector category: aCategory source: aSource
 
 	className := aName.
 	classIsMeta := isMetaclass.
 	selector := aSelector.
 	category := aCategory.
 	source := aSource.
+!
+
+= aDefinition
+    ^ super = aDefinition
+        and: [ aDefinition source = self source
+                and: [ aDefinition category = self category ] ]
+!
+
+source
+
+	^source
+!
+
+category
+
+	^category
+!
+
+description
+	^ Array	
+		with: className
+		with: selector
+		with: classIsMeta
 ! !
 
 !CypressMethodDefinition class methodsFor: 'not yet classified'!

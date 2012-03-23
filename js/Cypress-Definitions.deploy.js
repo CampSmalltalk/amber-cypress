@@ -1,5 +1,38 @@
 smalltalk.addPackage('Cypress-Definitions', {});
 smalltalk.addClass('CypressDefinition', smalltalk.Object, [], 'Cypress-Definitions');
+smalltalk.addMethod(
+unescape('__eq'),
+smalltalk.method({
+selector: unescape('%3D'),
+fn: function (aDefinition){
+var self=this;
+return smalltalk.send(smalltalk.send(aDefinition, "_isKindOf_", [(smalltalk.CypressDefinition || CypressDefinition)]), "_and_", [(function(){return smalltalk.send(self, "_isRevisionOf_", [aDefinition]);})]);
+return self;}
+}),
+smalltalk.CypressDefinition);
+
+smalltalk.addMethod(
+unescape('_isRevisionOf_'),
+smalltalk.method({
+selector: unescape('isRevisionOf%3A'),
+fn: function (aDefinition){
+var self=this;
+return smalltalk.send(smalltalk.send(aDefinition, "_isKindOf_", [(smalltalk.CypressDefinition || CypressDefinition)]), "_and_", [(function(){return smalltalk.send(smalltalk.send(aDefinition, "_description", []), "__eq", [smalltalk.send(self, "_description", [])]);})]);
+return self;}
+}),
+smalltalk.CypressDefinition);
+
+smalltalk.addMethod(
+unescape('_description'),
+smalltalk.method({
+selector: unescape('description'),
+fn: function (){
+var self=this;
+smalltalk.send(self, "_subclassResponsibility", []);
+return self;}
+}),
+smalltalk.CypressDefinition);
+
 
 
 smalltalk.addClass('CypressPackage', smalltalk.Object, ['name'], 'Cypress-Definitions');
@@ -80,6 +113,17 @@ return self;}
 }),
 smalltalk.CypressSnapshot);
 
+smalltalk.addMethod(
+unescape('_definitions'),
+smalltalk.method({
+selector: unescape('definitions'),
+fn: function (){
+var self=this;
+return self['@definitions'];
+return self;}
+}),
+smalltalk.CypressSnapshot);
+
 
 smalltalk.addMethod(
 unescape('_definitions_'),
@@ -110,6 +154,83 @@ return self;}
 }),
 smalltalk.CypressClassDefinition);
 
+smalltalk.addMethod(
+unescape('__eq'),
+smalltalk.method({
+selector: unescape('%3D'),
+fn: function (aDefinition){
+var self=this;
+return smalltalk.send(smalltalk.send(self, "__eq", [aDefinition], smalltalk.CypressDefinition), "_and_", [(function(){return smalltalk.send(smalltalk.send(self['@superclassName'], "__eq", [smalltalk.send(aDefinition, "_superclassName", [])]), "_and_", [(function(){return smalltalk.send(smalltalk.send(self['@category'], "__eq", [smalltalk.send(aDefinition, "_category", [])]), "_and_", [(function(){return smalltalk.send(smalltalk.send(self['@variables'], "__eq", [smalltalk.send(aDefinition, "_variables", [])]), "_and_", [(function(){return smalltalk.send(self['@comment'], "__eq", [smalltalk.send(aDefinition, "_comment", [])]);})]);})]);})]);})]);
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
+smalltalk.addMethod(
+unescape('_superclassName'),
+smalltalk.method({
+selector: unescape('superclassName'),
+fn: function (){
+var self=this;
+return self['@superclassName'];
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
+smalltalk.addMethod(
+unescape('_name'),
+smalltalk.method({
+selector: unescape('name'),
+fn: function (){
+var self=this;
+return self['@name'];
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
+smalltalk.addMethod(
+unescape('_category'),
+smalltalk.method({
+selector: unescape('category'),
+fn: function (){
+var self=this;
+return self['@category'];
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
+smalltalk.addMethod(
+unescape('_variables'),
+smalltalk.method({
+selector: unescape('variables'),
+fn: function (){
+var self=this;
+return self['@variables'];
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
+smalltalk.addMethod(
+unescape('_comment'),
+smalltalk.method({
+selector: unescape('comment'),
+fn: function (){
+var self=this;
+return self['@comment'];
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
+smalltalk.addMethod(
+unescape('_description'),
+smalltalk.method({
+selector: unescape('description'),
+fn: function (){
+var self=this;
+return smalltalk.send((smalltalk.Array || Array), "_with_", [self['@name']]);
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
 
 smalltalk.addMethod(
 unescape('_name_superclassName_category_instVarNames_classInstVarNames_comment_'),
@@ -135,6 +256,50 @@ var self=this;
 (self['@selector']=aSelector);
 (self['@category']=aCategory);
 (self['@source']=aSource);
+return self;}
+}),
+smalltalk.CypressMethodDefinition);
+
+smalltalk.addMethod(
+unescape('__eq'),
+smalltalk.method({
+selector: unescape('%3D'),
+fn: function (aDefinition){
+var self=this;
+return smalltalk.send(smalltalk.send(self, "__eq", [aDefinition], smalltalk.CypressDefinition), "_and_", [(function(){return smalltalk.send(smalltalk.send(smalltalk.send(aDefinition, "_source", []), "__eq", [smalltalk.send(self, "_source", [])]), "_and_", [(function(){return smalltalk.send(smalltalk.send(aDefinition, "_category", []), "__eq", [smalltalk.send(self, "_category", [])]);})]);})]);
+return self;}
+}),
+smalltalk.CypressMethodDefinition);
+
+smalltalk.addMethod(
+unescape('_source'),
+smalltalk.method({
+selector: unescape('source'),
+fn: function (){
+var self=this;
+return self['@source'];
+return self;}
+}),
+smalltalk.CypressMethodDefinition);
+
+smalltalk.addMethod(
+unescape('_category'),
+smalltalk.method({
+selector: unescape('category'),
+fn: function (){
+var self=this;
+return self['@category'];
+return self;}
+}),
+smalltalk.CypressMethodDefinition);
+
+smalltalk.addMethod(
+unescape('_description'),
+smalltalk.method({
+selector: unescape('description'),
+fn: function (){
+var self=this;
+return smalltalk.send((smalltalk.Array || Array), "_with_with_with_", [self['@className'], self['@selector'], self['@classIsMeta']]);
 return self;}
 }),
 smalltalk.CypressMethodDefinition);
