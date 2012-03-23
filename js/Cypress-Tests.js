@@ -66,5 +66,25 @@ referencedClasses: ["CypressPackage"]
 }),
 smalltalk.CypressDefinitionTest);
 
+smalltalk.addMethod(
+unescape('_testSnapshot'),
+smalltalk.method({
+selector: unescape('testSnapshot'),
+category: 'testing',
+fn: function (){
+var self=this;
+var name=nil;
+var pkg=nil;
+(name=unescape("Cypress-Mocks"));
+(pkg=smalltalk.send(smalltalk.send((smalltalk.CypressPackage || CypressPackage), "_new", []), "_name_", [name]));
+smalltalk.send(pkg, "_snapshot", []);
+return self;},
+args: [],
+source: unescape('testSnapshot%0A%09%7C%20name%20pkg%20%7C%0A%09name%20%3A%3D%20%27Cypress-Mocks%27.%0A%09pkg%20%3A%3D%20CypressPackage%20new%20name%3A%20name.%0A%09pkg%20snapshot'),
+messageSends: ["name:", "new", "snapshot"],
+referencedClasses: ["CypressPackage"]
+}),
+smalltalk.CypressDefinitionTest);
+
 
 

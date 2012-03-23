@@ -51,5 +51,20 @@ return self;}
 }),
 smalltalk.CypressDefinitionTest);
 
+smalltalk.addMethod(
+unescape('_testSnapshot'),
+smalltalk.method({
+selector: unescape('testSnapshot'),
+fn: function (){
+var self=this;
+var name=nil;
+var pkg=nil;
+(name=unescape("Cypress-Mocks"));
+(pkg=smalltalk.send(smalltalk.send((smalltalk.CypressPackage || CypressPackage), "_new", []), "_name_", [name]));
+smalltalk.send(pkg, "_snapshot", []);
+return self;}
+}),
+smalltalk.CypressDefinitionTest);
+
 
 

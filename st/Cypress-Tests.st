@@ -29,5 +29,12 @@ testPrintString
 	name := 'Cypress-Mocks'.
 	pkg := CypressPackage new name: name.
 	self assert: 'a CypressPackage(', name, ')' equals: pkg printString.
+!
+
+testSnapshot
+	| name pkg |
+	name := 'Cypress-Mocks'.
+	pkg := CypressPackage new name: name.
+	pkg snapshot
 ! !
 

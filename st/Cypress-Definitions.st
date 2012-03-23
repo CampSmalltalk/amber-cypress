@@ -1,6 +1,6 @@
 Smalltalk current createPackage: 'Cypress-Definitions' properties: #{}!
-Object subclass: #CypressSnapshot
-	instanceVariableNames: 'definitions'
+Object subclass: #CypressDefinition
+	instanceVariableNames: ''
 	category: 'Cypress-Definitions'!
 
 Object subclass: #CypressPackage
@@ -28,30 +28,110 @@ snapshot
 	package sortedClasses do: [:cls |
         	definitions add: cls asCypressClassDefinition.
                 cls methodDictionary values do: [:method |
-			(method category match: '^\*') ifFalse: [ method asCypressMethodDefinition ]]].
+			(method category match: '^\*') ifFalse: [ definitions add: method asCypressMethodDefinition ]]].
 	name := package name.
 	Smalltalk current classes, (Smalltalk current classes collect: [:each | each class]) do: [:each |
 		each methodDictionary values do: [:method |
 			method category = ('*', name) ifTrue: [
-				definitions add: (self methodDefinition: method for: each) ]]].
-	^ CypressSnapshot fromDefinitions: definitions
+				definitions add: method asCypressMethodDefinition ]]].
+	^ CypressSnapshot definitions: definitions
 !
 
 printString
 	^super printString, '(', name, ')'
 ! !
 
-Object subclass: #CypressDefinition
-	instanceVariableNames: ''
+Object subclass: #CypressSnapshot
+	instanceVariableNames: 'definitions'
 	category: 'Cypress-Definitions'!
 
+!CypressSnapshot methodsFor: 'not yet classified'!
+
+definitions: aDefinitions
+
+	definitions := aDefinitions
+! !
+
+!CypressSnapshot class methodsFor: 'not yet classified'!
+
+definitions: aDefinitions
+
+	^(self new) definitions: aDefinitions
+! !
+
 CypressDefinition subclass: #CypressClassDefinition
-	instanceVariableNames: 'name superclassName variables category type comment'
+	instanceVariableNames: 'name superclassName variables category type comment instVarNames classInstVarNames'
 	category: 'Cypress-Definitions'!
+
+!CypressClassDefinition methodsFor: 'not yet classified'!
+
+name: aClassName 
+superclassName: aSuperclassName
+category: aCategory
+instVarNames: anInstanceVariableNames
+classInstVarNames: aClassInstanceVariableNames
+comment: aComment
+
+	name := aClassName.
+	superclassName := aSuperclassName.
+	category := aCategory.
+	instVarNames := anInstanceVariableNames.
+	classInstVarNames := aClassInstanceVariableNames.
+	comment := aComment
+! !
+
+!CypressClassDefinition class methodsFor: 'not yet classified'!
+
+name: aClassName 
+superclassName: aSuperclassName
+category: aCategory
+instVarNames: anInstanceVariableNames
+classInstVarNames: aClassInstanceVariableNames
+comment: aComment
+
+	^(self new) 
+		name: aClassName 
+		superclassName: aSuperclassName
+		category: aCategory
+		instVarNames: anInstanceVariableNames
+		classInstVarNames: aClassInstanceVariableNames
+		comment: aComment
+! !
 
 CypressDefinition subclass: #CypressMethodDefinition
 	instanceVariableNames: 'classIsMeta source category selector className'
 	category: 'Cypress-Definitions'!
+
+!CypressMethodDefinition methodsFor: 'not yet classified'!
+
+className: aName
+classIsMeta: isMetaclass
+selector: aSelector
+category: aCategory
+source: aSource
+
+	className := aName.
+	classIsMeta := isMetaclass.
+	selector := aSelector.
+	category := aCategory.
+	source := aSource.
+! !
+
+!CypressMethodDefinition class methodsFor: 'not yet classified'!
+
+className: aName
+classIsMeta: isMetaclass
+selector: aSelector
+category: aCategory
+source: aSource
+
+	^(self new)
+		className: aName
+		classIsMeta: isMetaclass
+		selector: aSelector
+		category: aCategory
+		source: aSource
+! !
 
 !Object methodsFor: '*Cypress-Definitions'!
 
@@ -63,19 +143,13 @@ species
 !Class methodsFor: '*Cypress-Definitions'!
 
 asCypressClassDefinition
-	^MCClassDefinition
+	^CypressClassDefinition
 		name: self name
 		superclassName: self superclass name
-		traitComposition: self traitCompositionString
-		classTraitComposition: self class traitCompositionString
 		category: self category 
-		instVarNames: self instVarNames
-		classVarNames: self classVarNames
-		poolDictionaryNames: self poolDictionaryNames
-		classInstVarNames: self class instVarNames
-		type: self typeOfClass
-		comment: self organization classComment	 asString
-		commentStamp: self organization commentStamp
+		instVarNames: self instanceVariableNames
+		classInstVarNames: self class instanceVariableNames
+		comment: self comment
 ! !
 
 !CompiledMethod methodsFor: '*Cypress-Definitions'!
@@ -83,9 +157,9 @@ asCypressClassDefinition
 asCypressMethodDefinition
 
 	CypressMethodDefinition 
-        	className: self classSymbol
-		classIsMeta: self classIsMeta
-		selector: self methodSymbol
+        	className: self methodClass name
+		classIsMeta: self methodClass isMetaclass
+		selector: self selector
 		category: self category
 		source: self source
 ! !

@@ -1,5 +1,5 @@
 smalltalk.addPackage('Cypress-Definitions', {});
-smalltalk.addClass('CypressSnapshot', smalltalk.Object, ['definitions'], 'Cypress-Definitions');
+smalltalk.addClass('CypressDefinition', smalltalk.Object, [], 'Cypress-Definitions');
 
 
 smalltalk.addClass('CypressPackage', smalltalk.Object, ['name'], 'Cypress-Definitions');
@@ -47,10 +47,10 @@ var definitions=nil;
 var name=nil;
 (package=smalltalk.send(smalltalk.send(self, "_class", []), "_package", []));
 (definitions=smalltalk.send((smalltalk.OrderedCollection || OrderedCollection), "_new", []));
-smalltalk.send(smalltalk.send(package, "_sortedClasses", []), "_do_", [(function(cls){smalltalk.send(definitions, "_add_", [smalltalk.send(cls, "_asCypressClassDefinition", [])]);return smalltalk.send(smalltalk.send(smalltalk.send(cls, "_methodDictionary", []), "_values", []), "_do_", [(function(method){return ((($receiver = smalltalk.send(smalltalk.send(method, "_category", []), "_match_", [unescape("%5E%5C*")])).klass === smalltalk.Boolean) ? (! $receiver ? (function(){return smalltalk.send(method, "_asCypressMethodDefinition", []);})() : nil) : smalltalk.send($receiver, "_ifFalse_", [(function(){return smalltalk.send(method, "_asCypressMethodDefinition", []);})]));})]);})]);
+smalltalk.send(smalltalk.send(package, "_sortedClasses", []), "_do_", [(function(cls){smalltalk.send(definitions, "_add_", [smalltalk.send(cls, "_asCypressClassDefinition", [])]);return smalltalk.send(smalltalk.send(smalltalk.send(cls, "_methodDictionary", []), "_values", []), "_do_", [(function(method){return ((($receiver = smalltalk.send(smalltalk.send(method, "_category", []), "_match_", [unescape("%5E%5C*")])).klass === smalltalk.Boolean) ? (! $receiver ? (function(){return smalltalk.send(definitions, "_add_", [smalltalk.send(method, "_asCypressMethodDefinition", [])]);})() : nil) : smalltalk.send($receiver, "_ifFalse_", [(function(){return smalltalk.send(definitions, "_add_", [smalltalk.send(method, "_asCypressMethodDefinition", [])]);})]));})]);})]);
 (self['@name']=smalltalk.send(package, "_name", []));
-smalltalk.send(smalltalk.send(smalltalk.send(smalltalk.send((smalltalk.Smalltalk || Smalltalk), "_current", []), "_classes", []), "__comma", [smalltalk.send(smalltalk.send(smalltalk.send((smalltalk.Smalltalk || Smalltalk), "_current", []), "_classes", []), "_collect_", [(function(each){return smalltalk.send(each, "_class", []);})])]), "_do_", [(function(each){return smalltalk.send(smalltalk.send(smalltalk.send(each, "_methodDictionary", []), "_values", []), "_do_", [(function(method){return ((($receiver = smalltalk.send(smalltalk.send(method, "_category", []), "__eq", [smalltalk.send(unescape("*"), "__comma", [self['@name']])])).klass === smalltalk.Boolean) ? ($receiver ? (function(){return smalltalk.send(definitions, "_add_", [smalltalk.send(self, "_methodDefinition_for_", [method, each])]);})() : nil) : smalltalk.send($receiver, "_ifTrue_", [(function(){return smalltalk.send(definitions, "_add_", [smalltalk.send(self, "_methodDefinition_for_", [method, each])]);})]));})]);})]);
-return smalltalk.send((smalltalk.CypressSnapshot || CypressSnapshot), "_fromDefinitions_", [definitions]);
+smalltalk.send(smalltalk.send(smalltalk.send(smalltalk.send((smalltalk.Smalltalk || Smalltalk), "_current", []), "_classes", []), "__comma", [smalltalk.send(smalltalk.send(smalltalk.send((smalltalk.Smalltalk || Smalltalk), "_current", []), "_classes", []), "_collect_", [(function(each){return smalltalk.send(each, "_class", []);})])]), "_do_", [(function(each){return smalltalk.send(smalltalk.send(smalltalk.send(each, "_methodDictionary", []), "_values", []), "_do_", [(function(method){return ((($receiver = smalltalk.send(smalltalk.send(method, "_category", []), "__eq", [smalltalk.send(unescape("*"), "__comma", [self['@name']])])).klass === smalltalk.Boolean) ? ($receiver ? (function(){return smalltalk.send(definitions, "_add_", [smalltalk.send(method, "_asCypressMethodDefinition", [])]);})() : nil) : smalltalk.send($receiver, "_ifTrue_", [(function(){return smalltalk.send(definitions, "_add_", [smalltalk.send(method, "_asCypressMethodDefinition", [])]);})]));})]);})]);
+return smalltalk.send((smalltalk.CypressSnapshot || CypressSnapshot), "_definitions_", [definitions]);
 return self;}
 }),
 smalltalk.CypressPackage);
@@ -68,13 +68,88 @@ smalltalk.CypressPackage);
 
 
 
-smalltalk.addClass('CypressDefinition', smalltalk.Object, [], 'Cypress-Definitions');
+smalltalk.addClass('CypressSnapshot', smalltalk.Object, ['definitions'], 'Cypress-Definitions');
+smalltalk.addMethod(
+unescape('_definitions_'),
+smalltalk.method({
+selector: unescape('definitions%3A'),
+fn: function (aDefinitions){
+var self=this;
+(self['@definitions']=aDefinitions);
+return self;}
+}),
+smalltalk.CypressSnapshot);
 
 
-smalltalk.addClass('CypressClassDefinition', smalltalk.CypressDefinition, ['name', 'superclassName', 'variables', 'category', 'type', 'comment'], 'Cypress-Definitions');
+smalltalk.addMethod(
+unescape('_definitions_'),
+smalltalk.method({
+selector: unescape('definitions%3A'),
+fn: function (aDefinitions){
+var self=this;
+return smalltalk.send(smalltalk.send(self, "_new", []), "_definitions_", [aDefinitions]);
+return self;}
+}),
+smalltalk.CypressSnapshot.klass);
+
+
+smalltalk.addClass('CypressClassDefinition', smalltalk.CypressDefinition, ['name', 'superclassName', 'variables', 'category', 'type', 'comment', 'instVarNames', 'classInstVarNames'], 'Cypress-Definitions');
+smalltalk.addMethod(
+unescape('_name_superclassName_category_instVarNames_classInstVarNames_comment_'),
+smalltalk.method({
+selector: unescape('name%3AsuperclassName%3Acategory%3AinstVarNames%3AclassInstVarNames%3Acomment%3A'),
+fn: function (aClassName, aSuperclassName, aCategory, anInstanceVariableNames, aClassInstanceVariableNames, aComment){
+var self=this;
+(self['@name']=aClassName);
+(self['@superclassName']=aSuperclassName);
+(self['@category']=aCategory);
+(self['@instVarNames']=anInstanceVariableNames);
+(self['@classInstVarNames']=aClassInstanceVariableNames);
+(self['@comment']=aComment);
+return self;}
+}),
+smalltalk.CypressClassDefinition);
+
+
+smalltalk.addMethod(
+unescape('_name_superclassName_category_instVarNames_classInstVarNames_comment_'),
+smalltalk.method({
+selector: unescape('name%3AsuperclassName%3Acategory%3AinstVarNames%3AclassInstVarNames%3Acomment%3A'),
+fn: function (aClassName, aSuperclassName, aCategory, anInstanceVariableNames, aClassInstanceVariableNames, aComment){
+var self=this;
+return smalltalk.send(smalltalk.send(self, "_new", []), "_name_superclassName_category_instVarNames_classInstVarNames_comment_", [aClassName, aSuperclassName, aCategory, anInstanceVariableNames, aClassInstanceVariableNames, aComment]);
+return self;}
+}),
+smalltalk.CypressClassDefinition.klass);
 
 
 smalltalk.addClass('CypressMethodDefinition', smalltalk.CypressDefinition, ['classIsMeta', 'source', 'category', 'selector', 'className'], 'Cypress-Definitions');
+smalltalk.addMethod(
+unescape('_className_classIsMeta_selector_category_source_'),
+smalltalk.method({
+selector: unescape('className%3AclassIsMeta%3Aselector%3Acategory%3Asource%3A'),
+fn: function (aName, isMetaclass, aSelector, aCategory, aSource){
+var self=this;
+(self['@className']=aName);
+(self['@classIsMeta']=isMetaclass);
+(self['@selector']=aSelector);
+(self['@category']=aCategory);
+(self['@source']=aSource);
+return self;}
+}),
+smalltalk.CypressMethodDefinition);
+
+
+smalltalk.addMethod(
+unescape('_className_classIsMeta_selector_category_source_'),
+smalltalk.method({
+selector: unescape('className%3AclassIsMeta%3Aselector%3Acategory%3Asource%3A'),
+fn: function (aName, isMetaclass, aSelector, aCategory, aSource){
+var self=this;
+return smalltalk.send(smalltalk.send(self, "_new", []), "_className_classIsMeta_selector_category_source_", [aName, isMetaclass, aSelector, aCategory, aSource]);
+return self;}
+}),
+smalltalk.CypressMethodDefinition.klass);
 
 
 smalltalk.addMethod(
@@ -94,7 +169,7 @@ smalltalk.method({
 selector: unescape('asCypressClassDefinition'),
 fn: function (){
 var self=this;
-return smalltalk.send((smalltalk.MCClassDefinition || MCClassDefinition), "_name_superclassName_traitComposition_classTraitComposition_category_instVarNames_classVarNames_poolDictionaryNames_classInstVarNames_type_comment_commentStamp_", [smalltalk.send(self, "_name", []), smalltalk.send(smalltalk.send(self, "_superclass", []), "_name", []), smalltalk.send(self, "_traitCompositionString", []), smalltalk.send(smalltalk.send(self, "_class", []), "_traitCompositionString", []), smalltalk.send(self, "_category", []), smalltalk.send(self, "_instVarNames", []), smalltalk.send(self, "_classVarNames", []), smalltalk.send(self, "_poolDictionaryNames", []), smalltalk.send(smalltalk.send(self, "_class", []), "_instVarNames", []), smalltalk.send(self, "_typeOfClass", []), smalltalk.send(smalltalk.send(smalltalk.send(self, "_organization", []), "_classComment", []), "_asString", []), smalltalk.send(smalltalk.send(self, "_organization", []), "_commentStamp", [])]);
+return smalltalk.send((smalltalk.CypressClassDefinition || CypressClassDefinition), "_name_superclassName_category_instVarNames_classInstVarNames_comment_", [smalltalk.send(self, "_name", []), smalltalk.send(smalltalk.send(self, "_superclass", []), "_name", []), smalltalk.send(self, "_category", []), smalltalk.send(self, "_instanceVariableNames", []), smalltalk.send(smalltalk.send(self, "_class", []), "_instanceVariableNames", []), smalltalk.send(self, "_comment", [])]);
 return self;}
 }),
 smalltalk.Class);
@@ -105,7 +180,7 @@ smalltalk.method({
 selector: unescape('asCypressMethodDefinition'),
 fn: function (){
 var self=this;
-smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [smalltalk.send(self, "_classSymbol", []), smalltalk.send(self, "_classIsMeta", []), smalltalk.send(self, "_methodSymbol", []), smalltalk.send(self, "_category", []), smalltalk.send(self, "_source", [])]);
+smalltalk.send((smalltalk.CypressMethodDefinition || CypressMethodDefinition), "_className_classIsMeta_selector_category_source_", [smalltalk.send(smalltalk.send(self, "_methodClass", []), "_name", []), smalltalk.send(smalltalk.send(self, "_methodClass", []), "_isMetaclass", []), smalltalk.send(self, "_selector", []), smalltalk.send(self, "_category", []), smalltalk.send(self, "_source", [])]);
 return self;}
 }),
 smalltalk.CompiledMethod);
