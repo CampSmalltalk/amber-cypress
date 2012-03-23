@@ -5,13 +5,12 @@
   <body>
     <script type='text/javascript'> loadAmber({
         files: [
-          'AmberProjectPage.js'
+          'Cypress-Definitions.js'
         ],
         prefix: 'js',
         ready: function() {
           $(function() {
-            smalltalk.AmberProjectPage._open();
-            smalltalk.Browser._openOn_(smalltalk.AmberProjectPage);
+            smalltalk.Browser._openOn_(smalltalk.CypressDefinition);
           });
         }}) </script>
   </body> 
