@@ -32,11 +32,19 @@ testPrintString
 !
 
 testSnapshot
-	| name pkg packageDefinitions expectedDefinitions |
+	| name pkg packageDefinitions expectedDefinitions count |
 	name := 'Cypress-Mocks'.
 	pkg := CypressPackage new name: name.
 	packageDefinitions := pkg snapshot definitions.
 	expectedDefinitions := self expectedMockDefinitions.
+	self assert: (expectedDefinitions size = packageDefinitions size).
+packageDefinitions inspect.
+expectedDefinitions inspect.
+count := 1.
+	packageDefinitions do: [:def |
+Transcript cr; show: count printString.
+count := count + 1. 
+		self assert: (expectedDefinitions includes: def) ].
 !
 
 expectedMockDefinitions
@@ -47,8 +55,8 @@ expectedMockDefinitions
         		name: className
        		 	superclassName: 'Object'
        			category: className
-                       	instVarNames: 'name'
-			classInstVarNames: 'current'
+                       	instVarNames: #('name')
+			classInstVarNames: #('current')
         		comment: 'This mock contains basic class and instance method selectors').
    	 	(CypressMethodDefinition
           		className: className
