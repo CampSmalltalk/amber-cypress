@@ -13,6 +13,10 @@ name: aString
 
 name
 	^name
+!
+
+extra
+	"extra method"
 ! !
 
 !CypressMockBasic methodsFor: 'initialization'!

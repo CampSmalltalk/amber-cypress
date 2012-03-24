@@ -34,6 +34,17 @@ return self;}
 }),
 smalltalk.CypressMockBasic);
 
+smalltalk.addMethod(
+unescape('_extra'),
+smalltalk.method({
+selector: unescape('extra'),
+fn: function (){
+var self=this;
+
+return self;}
+}),
+smalltalk.CypressMockBasic);
+
 
 smalltalk.CypressMockBasic.klass.iVarNames = ['current'];
 smalltalk.addMethod(

@@ -1,20 +1,25 @@
 Smalltalk current createPackage: 'Cypress-Definitions' properties: #{}!
-Object subclass: #CypressDefinition
-	instanceVariableNames: ''
+Object subclass: #CypressSnapshot
+	instanceVariableNames: 'definitions'
 	category: 'Cypress-Definitions'!
 
-!CypressDefinition methodsFor: 'not yet classified'!
+!CypressSnapshot methodsFor: 'not yet classified'!
 
-= aDefinition
-	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
+definitions: aDefinitions
+
+	definitions := aDefinitions
 !
 
-isRevisionOf: aDefinition
-	^ (aDefinition isKindOf: CypressDefinition) and: [aDefinition description = self description]
-!
+definitions
 
-description
-	self subclassResponsibility
+	^definitions
+! !
+
+!CypressSnapshot class methodsFor: 'not yet classified'!
+
+definitions: aDefinitions
+
+	^(self new) definitions: aDefinitions
 ! !
 
 Object subclass: #CypressPackage
@@ -59,28 +64,108 @@ printString
 	^super printString, '(', name, ')'
 ! !
 
-Object subclass: #CypressSnapshot
-	instanceVariableNames: 'definitions'
+Object subclass: #CypressDefinition
+	instanceVariableNames: ''
 	category: 'Cypress-Definitions'!
 
-!CypressSnapshot methodsFor: 'not yet classified'!
+!CypressDefinition methodsFor: 'not yet classified'!
 
-definitions: aDefinitions
+= aDefinition
+	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
+!
 
-	definitions := aDefinitions
+isRevisionOf: aDefinition
+	^ (aDefinition isKindOf: CypressDefinition) and: [aDefinition description = self description]
+!
+
+description
+	self subclassResponsibility
+! !
+
+Object subclass: #CypressPatch
+	instanceVariableNames: 'operations'
+	category: 'Cypress-Definitions'!
+
+!CypressPatch methodsFor: 'not yet classified'!
+
+fromBase: baseSnapshot toTarget: targetSnapshot
+	| base target |	
+	operations := OrderedCollection new.
+	base := CypressDefinitionIndex definitions: baseSnapshot definitions.
+	target := CypressDefinitionIndex definitions: targetSnapshot definitions.
+	
+	target definitions do:
+		[:t |
+		base
+			definitionLike: t
+			ifPresent: [:b | (b isSameRevisionAs: t) ifFalse: [operations add: (CypressModification of: b to: t)]]
+			ifAbsent: [operations add: (CypressAddition of: t)]].
+		
+	base definitions do:
+		[:b |
+		target
+			definitionLike: b
+			ifPresent: [:t | ]
+			ifAbsent: [operations add: (CypressRemoval of: b)]]
+!
+
+operations
+
+	^operations
+! !
+
+!CypressPatch class methodsFor: 'not yet classified'!
+
+fromBase: baseSnapshot toTarget: targetSnapshot
+	^ (self new)
+		fromBase: baseSnapshot
+		toTarget: targetSnapshot
+! !
+
+Object subclass: #CypressDefinitionIndex
+	instanceVariableNames: 'definitionMap'
+	category: 'Cypress-Definitions'!
+
+!CypressDefinitionIndex methodsFor: 'not yet classified'!
+
+add: aDefinition
+	^ self definitionMap at: aDefinition description put: aDefinition
+!
+
+addAll: aCollection
+	aCollection do: [:ea | self add: ea]
+!
+
+definitionLike: aDefinition ifPresent: foundBlock ifAbsent: errorBlock
+	| definition |
+	definition := self definitionMap at: aDefinition description ifAbsent: [].
+	^ definition
+		ifNil: errorBlock
+		ifNotNil: [foundBlock value: definition]
 !
 
 definitions
+	^self definitionMap values
+!
 
-	^definitions
+definitionMap
+	definitionMap ifNil: [ definitionMap := Dictionary new ].
+	^ definitionMap
+!
+
+remove: aDefinition
+	self definitionMap removeKey: aDefinition description ifAbsent: []
 ! !
 
-!CypressSnapshot class methodsFor: 'not yet classified'!
+!CypressDefinitionIndex class methodsFor: 'not yet classified'!
 
-definitions: aDefinitions
-
-	^(self new) definitions: aDefinitions
+definitions: aCollection
+	^ self new addAll: aCollection
 ! !
+
+Object subclass: #CypressPatchOperation
+	instanceVariableNames: ''
+	category: 'Cypress-Definitions'!
 
 CypressDefinition subclass: #CypressClassDefinition
 	instanceVariableNames: 'name superclassName category comment instVarNames classInstVarNames'
@@ -212,6 +297,58 @@ source: aSource
 		selector: aSelector
 		category: aCategory
 		source: aSource
+! !
+
+CypressPatchOperation subclass: #CypressAddition
+	instanceVariableNames: 'definition'
+	category: 'Cypress-Definitions'!
+
+!CypressAddition methodsFor: 'not yet classified'!
+
+definition: aDefinition
+
+	definition := aDefinition
+! !
+
+!CypressAddition class methodsFor: 'not yet classified'!
+
+of: aDefinition
+	^ self new definition: aDefinition
+! !
+
+CypressPatchOperation subclass: #CypressModification
+	instanceVariableNames: 'obsoletion modification'
+	category: 'Cypress-Definitions'!
+
+!CypressModification methodsFor: 'not yet classified'!
+
+base: base target: target
+
+	obsoletion := base.
+	modification := target.
+! !
+
+!CypressModification class methodsFor: 'not yet classified'!
+
+of: base to: target
+	^ self new base: base target: target
+! !
+
+CypressPatchOperation subclass: #CypressRemoval
+	instanceVariableNames: 'definition'
+	category: 'Cypress-Definitions'!
+
+!CypressRemoval methodsFor: 'not yet classified'!
+
+definition: aDefinition
+
+	definition := aDefinition
+! !
+
+!CypressRemoval class methodsFor: 'not yet classified'!
+
+of: aDefinition
+	^ self new definition: aDefinition
 ! !
 
 !Object methodsFor: '*Cypress-Definitions'!

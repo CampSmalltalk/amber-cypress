@@ -50,6 +50,22 @@ referencedClasses: []
 }),
 smalltalk.CypressMockBasic);
 
+smalltalk.addMethod(
+unescape('_extra'),
+smalltalk.method({
+selector: unescape('extra'),
+category: 'accessing',
+fn: function (){
+var self=this;
+
+return self;},
+args: [],
+source: unescape('extra%0A%09%22extra%20method%22'),
+messageSends: [],
+referencedClasses: []
+}),
+smalltalk.CypressMockBasic);
+
 
 smalltalk.CypressMockBasic.klass.iVarNames = ['current'];
 smalltalk.addMethod(
