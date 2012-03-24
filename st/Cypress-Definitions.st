@@ -1,25 +1,20 @@
 Smalltalk current createPackage: 'Cypress-Definitions' properties: #{}!
-Object subclass: #CypressSnapshot
-	instanceVariableNames: 'definitions'
+Object subclass: #CypressDefinition
+	instanceVariableNames: ''
 	category: 'Cypress-Definitions'!
 
-!CypressSnapshot methodsFor: 'not yet classified'!
+!CypressDefinition methodsFor: 'not yet classified'!
 
-definitions: aDefinitions
-
-	definitions := aDefinitions
+= aDefinition
+	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
 !
 
-definitions
+isRevisionOf: aDefinition
+	^ (aDefinition isKindOf: CypressDefinition) and: [aDefinition description = self description]
+!
 
-	^definitions
-! !
-
-!CypressSnapshot class methodsFor: 'not yet classified'!
-
-definitions: aDefinitions
-
-	^(self new) definitions: aDefinitions
+description
+	self subclassResponsibility
 ! !
 
 Object subclass: #CypressPackage
@@ -64,26 +59,31 @@ printString
 	^super printString, '(', name, ')'
 ! !
 
-Object subclass: #CypressDefinition
-	instanceVariableNames: ''
+Object subclass: #CypressSnapshot
+	instanceVariableNames: 'definitions'
 	category: 'Cypress-Definitions'!
 
-!CypressDefinition methodsFor: 'not yet classified'!
+!CypressSnapshot methodsFor: 'not yet classified'!
 
-= aDefinition
-	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
+definitions: aDefinitions
+
+	definitions := aDefinitions
 !
 
-isRevisionOf: aDefinition
-	^ (aDefinition isKindOf: CypressDefinition) and: [aDefinition description = self description]
-!
+definitions
 
-description
-	self subclassResponsibility
+	^definitions
+! !
+
+!CypressSnapshot class methodsFor: 'not yet classified'!
+
+definitions: aDefinitions
+
+	^(self new) definitions: aDefinitions
 ! !
 
 CypressDefinition subclass: #CypressClassDefinition
-	instanceVariableNames: 'name superclassName variables category type comment instVarNames classInstVarNames'
+	instanceVariableNames: 'name superclassName category comment instVarNames classInstVarNames'
 	category: 'Cypress-Definitions'!
 
 !CypressClassDefinition methodsFor: 'not yet classified'!

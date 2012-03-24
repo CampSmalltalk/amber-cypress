@@ -1,53 +1,53 @@
 smalltalk.addPackage('Cypress-Definitions', {});
-smalltalk.addClass('CypressSnapshot', smalltalk.Object, ['definitions'], 'Cypress-Definitions');
+smalltalk.addClass('CypressDefinition', smalltalk.Object, [], 'Cypress-Definitions');
 smalltalk.addMethod(
-unescape('_definitions_'),
+unescape('__eq'),
 smalltalk.method({
-selector: unescape('definitions%3A'),
+selector: unescape('%3D'),
 category: 'not yet classified',
-fn: function (aDefinitions){
+fn: function (aDefinition){
 var self=this;
-(self['@definitions']=aDefinitions);
+return smalltalk.send(smalltalk.send(aDefinition, "_isKindOf_", [(smalltalk.CypressDefinition || CypressDefinition)]), "_and_", [(function(){return smalltalk.send(self, "_isRevisionOf_", [aDefinition]);})]);
 return self;},
-args: ["aDefinitions"],
-source: unescape('definitions%3A%20aDefinitions%0A%0A%09definitions%20%3A%3D%20aDefinitions'),
-messageSends: [],
-referencedClasses: []
+args: ["aDefinition"],
+source: unescape('%3D%20aDefinition%0A%09%5E%28aDefinition%20isKindOf%3A%20CypressDefinition%29%20and%3A%20%5Bself%20isRevisionOf%3A%20aDefinition%5D'),
+messageSends: ["and:", "isKindOf:", "isRevisionOf:"],
+referencedClasses: ["CypressDefinition"]
 }),
-smalltalk.CypressSnapshot);
+smalltalk.CypressDefinition);
 
 smalltalk.addMethod(
-unescape('_definitions'),
+unescape('_isRevisionOf_'),
 smalltalk.method({
-selector: unescape('definitions'),
+selector: unescape('isRevisionOf%3A'),
+category: 'not yet classified',
+fn: function (aDefinition){
+var self=this;
+return smalltalk.send(smalltalk.send(aDefinition, "_isKindOf_", [(smalltalk.CypressDefinition || CypressDefinition)]), "_and_", [(function(){return smalltalk.send(smalltalk.send(aDefinition, "_description", []), "__eq", [smalltalk.send(self, "_description", [])]);})]);
+return self;},
+args: ["aDefinition"],
+source: unescape('isRevisionOf%3A%20aDefinition%0A%09%5E%20%28aDefinition%20isKindOf%3A%20CypressDefinition%29%20and%3A%20%5BaDefinition%20description%20%3D%20self%20description%5D'),
+messageSends: ["and:", "isKindOf:", unescape("%3D"), "description"],
+referencedClasses: ["CypressDefinition"]
+}),
+smalltalk.CypressDefinition);
+
+smalltalk.addMethod(
+unescape('_description'),
+smalltalk.method({
+selector: unescape('description'),
 category: 'not yet classified',
 fn: function (){
 var self=this;
-return self['@definitions'];
+smalltalk.send(self, "_subclassResponsibility", []);
 return self;},
 args: [],
-source: unescape('definitions%0A%0A%09%5Edefinitions'),
-messageSends: [],
+source: unescape('description%0A%09self%20subclassResponsibility'),
+messageSends: ["subclassResponsibility"],
 referencedClasses: []
 }),
-smalltalk.CypressSnapshot);
+smalltalk.CypressDefinition);
 
-
-smalltalk.addMethod(
-unescape('_definitions_'),
-smalltalk.method({
-selector: unescape('definitions%3A'),
-category: 'not yet classified',
-fn: function (aDefinitions){
-var self=this;
-return smalltalk.send(smalltalk.send(self, "_new", []), "_definitions_", [aDefinitions]);
-return self;},
-args: ["aDefinitions"],
-source: unescape('definitions%3A%20aDefinitions%0A%0A%09%5E%28self%20new%29%20definitions%3A%20aDefinitions'),
-messageSends: ["definitions:", "new"],
-referencedClasses: []
-}),
-smalltalk.CypressSnapshot.klass);
 
 
 smalltalk.addClass('CypressPackage', smalltalk.Object, ['name'], 'Cypress-Definitions');
@@ -141,58 +141,58 @@ smalltalk.CypressPackage);
 
 
 
-smalltalk.addClass('CypressDefinition', smalltalk.Object, [], 'Cypress-Definitions');
+smalltalk.addClass('CypressSnapshot', smalltalk.Object, ['definitions'], 'Cypress-Definitions');
 smalltalk.addMethod(
-unescape('__eq'),
+unescape('_definitions_'),
 smalltalk.method({
-selector: unescape('%3D'),
+selector: unescape('definitions%3A'),
 category: 'not yet classified',
-fn: function (aDefinition){
+fn: function (aDefinitions){
 var self=this;
-return smalltalk.send(smalltalk.send(aDefinition, "_isKindOf_", [(smalltalk.CypressDefinition || CypressDefinition)]), "_and_", [(function(){return smalltalk.send(self, "_isRevisionOf_", [aDefinition]);})]);
+(self['@definitions']=aDefinitions);
 return self;},
-args: ["aDefinition"],
-source: unescape('%3D%20aDefinition%0A%09%5E%28aDefinition%20isKindOf%3A%20CypressDefinition%29%20and%3A%20%5Bself%20isRevisionOf%3A%20aDefinition%5D'),
-messageSends: ["and:", "isKindOf:", "isRevisionOf:"],
-referencedClasses: ["CypressDefinition"]
+args: ["aDefinitions"],
+source: unescape('definitions%3A%20aDefinitions%0A%0A%09definitions%20%3A%3D%20aDefinitions'),
+messageSends: [],
+referencedClasses: []
 }),
-smalltalk.CypressDefinition);
+smalltalk.CypressSnapshot);
 
 smalltalk.addMethod(
-unescape('_isRevisionOf_'),
+unescape('_definitions'),
 smalltalk.method({
-selector: unescape('isRevisionOf%3A'),
-category: 'not yet classified',
-fn: function (aDefinition){
-var self=this;
-return smalltalk.send(smalltalk.send(aDefinition, "_isKindOf_", [(smalltalk.CypressDefinition || CypressDefinition)]), "_and_", [(function(){return smalltalk.send(smalltalk.send(aDefinition, "_description", []), "__eq", [smalltalk.send(self, "_description", [])]);})]);
-return self;},
-args: ["aDefinition"],
-source: unescape('isRevisionOf%3A%20aDefinition%0A%09%5E%20%28aDefinition%20isKindOf%3A%20CypressDefinition%29%20and%3A%20%5BaDefinition%20description%20%3D%20self%20description%5D'),
-messageSends: ["and:", "isKindOf:", unescape("%3D"), "description"],
-referencedClasses: ["CypressDefinition"]
-}),
-smalltalk.CypressDefinition);
-
-smalltalk.addMethod(
-unescape('_description'),
-smalltalk.method({
-selector: unescape('description'),
+selector: unescape('definitions'),
 category: 'not yet classified',
 fn: function (){
 var self=this;
-smalltalk.send(self, "_subclassResponsibility", []);
+return self['@definitions'];
 return self;},
 args: [],
-source: unescape('description%0A%09self%20subclassResponsibility'),
-messageSends: ["subclassResponsibility"],
+source: unescape('definitions%0A%0A%09%5Edefinitions'),
+messageSends: [],
 referencedClasses: []
 }),
-smalltalk.CypressDefinition);
+smalltalk.CypressSnapshot);
 
 
+smalltalk.addMethod(
+unescape('_definitions_'),
+smalltalk.method({
+selector: unescape('definitions%3A'),
+category: 'not yet classified',
+fn: function (aDefinitions){
+var self=this;
+return smalltalk.send(smalltalk.send(self, "_new", []), "_definitions_", [aDefinitions]);
+return self;},
+args: ["aDefinitions"],
+source: unescape('definitions%3A%20aDefinitions%0A%0A%09%5E%28self%20new%29%20definitions%3A%20aDefinitions'),
+messageSends: ["definitions:", "new"],
+referencedClasses: []
+}),
+smalltalk.CypressSnapshot.klass);
 
-smalltalk.addClass('CypressClassDefinition', smalltalk.CypressDefinition, ['name', 'superclassName', 'variables', 'category', 'type', 'comment', 'instVarNames', 'classInstVarNames'], 'Cypress-Definitions');
+
+smalltalk.addClass('CypressClassDefinition', smalltalk.CypressDefinition, ['name', 'superclassName', 'category', 'comment', 'instVarNames', 'classInstVarNames'], 'Cypress-Definitions');
 smalltalk.addMethod(
 unescape('_name_superclassName_category_instVarNames_classInstVarNames_comment_'),
 smalltalk.method({
