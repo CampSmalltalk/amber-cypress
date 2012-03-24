@@ -176,5 +176,6 @@ testPatch
 	| baseSnapshot targetSnapshot |
 	baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
 	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
+	CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot
 ! !
 

@@ -142,11 +142,12 @@ var baseSnapshot=nil;
 var targetSnapshot=nil;
 (baseSnapshot=smalltalk.send((smalltalk.CypressSnapshot || CypressSnapshot), "_definitions_", [smalltalk.send(self, "_baseDefinitions", [])]));
 (targetSnapshot=smalltalk.send((smalltalk.CypressSnapshot || CypressSnapshot), "_definitions_", [smalltalk.send(self, "_targetDefinitions", [])]));
+smalltalk.send((smalltalk.CypressPatch || CypressPatch), "_fromBase_toTarget_", [baseSnapshot, targetSnapshot]);
 return self;},
 args: [],
-source: unescape('testPatch%0A%0A%09%7C%20baseSnapshot%20targetSnapshot%20%7C%0A%09baseSnapshot%20%3A%3D%20CypressSnapshot%20definitions%3A%20self%20baseDefinitions.%0A%09targetSnapshot%20%3A%3D%20CypressSnapshot%20definitions%3A%20self%20targetDefinitions.%0A'),
-messageSends: ["definitions:", "baseDefinitions", "targetDefinitions"],
-referencedClasses: ["CypressSnapshot"]
+source: unescape('testPatch%0A%0A%09%7C%20baseSnapshot%20targetSnapshot%20%7C%0A%09baseSnapshot%20%3A%3D%20CypressSnapshot%20definitions%3A%20self%20baseDefinitions.%0A%09targetSnapshot%20%3A%3D%20CypressSnapshot%20definitions%3A%20self%20targetDefinitions.%0A%09CypressPatch%20fromBase%3A%20baseSnapshot%20toTarget%3A%20targetSnapshot%0A'),
+messageSends: ["definitions:", "baseDefinitions", "targetDefinitions", "fromBase:toTarget:"],
+referencedClasses: ["CypressSnapshot", "CypressPatch"]
 }),
 smalltalk.CypressDefinitionTest);
 

@@ -80,6 +80,10 @@ isRevisionOf: aDefinition
 
 description
 	self subclassResponsibility
+!
+
+isSameRevisionAs: aDefinition
+	^ self = aDefinition
 ! !
 
 Object subclass: #CypressPatch

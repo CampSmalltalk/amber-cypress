@@ -111,6 +111,7 @@ var baseSnapshot=nil;
 var targetSnapshot=nil;
 (baseSnapshot=smalltalk.send((smalltalk.CypressSnapshot || CypressSnapshot), "_definitions_", [smalltalk.send(self, "_baseDefinitions", [])]));
 (targetSnapshot=smalltalk.send((smalltalk.CypressSnapshot || CypressSnapshot), "_definitions_", [smalltalk.send(self, "_targetDefinitions", [])]));
+smalltalk.send((smalltalk.CypressPatch || CypressPatch), "_fromBase_toTarget_", [baseSnapshot, targetSnapshot]);
 return self;}
 }),
 smalltalk.CypressDefinitionTest);

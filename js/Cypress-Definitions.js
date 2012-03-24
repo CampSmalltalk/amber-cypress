@@ -190,6 +190,22 @@ referencedClasses: []
 }),
 smalltalk.CypressDefinition);
 
+smalltalk.addMethod(
+unescape('_isSameRevisionAs_'),
+smalltalk.method({
+selector: unescape('isSameRevisionAs%3A'),
+category: 'not yet classified',
+fn: function (aDefinition){
+var self=this;
+return smalltalk.send(self, "__eq", [aDefinition]);
+return self;},
+args: ["aDefinition"],
+source: unescape('isSameRevisionAs%3A%20aDefinition%0A%09%5E%20self%20%3D%20aDefinition'),
+messageSends: [unescape("%3D")],
+referencedClasses: []
+}),
+smalltalk.CypressDefinition);
+
 
 
 smalltalk.addClass('CypressPatch', smalltalk.Object, ['operations'], 'Cypress-Definitions');
