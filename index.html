@@ -10,13 +10,13 @@
         prefix: 'js',
         ready: function() {
           $(function() {
-            smalltalk.AmberProjectImporter._importSTPackage_prefix_(
-              'Cypress-Definitions', '../st/');
-            smalltalk.AmberProjectImporter._importSTPackage_prefix_(
-              'Cypress-Mocks', '../st/');
-             smalltalk.AmberProjectImporter._importSTPackage_prefix_(
-              'Cypress-Tests', '../st/');
-            smalltalk.Browser._openOn_(smalltalk.CypressDefinition);
+            smalltalk.Browser._open();
+            smalltalk.AmberProjectImporter._importSTPackages_prefix_(
+              ['Cypress-Definitions',
+                'Cypress-Mocks',
+                'Cypress-Tests'
+              ],
+              '../st/');
            });
         }}) </script>
   </body> 

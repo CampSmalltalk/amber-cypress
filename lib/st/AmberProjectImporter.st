@@ -19,5 +19,14 @@ importSTPackage: packageName prefix: prefix
             				chunks := jqXHR responseText.
             				Importer new import: chunks readStream ]]
 		}
+!
+
+importSTPackages: packageNameList prefix: prefix
+	"AmberProjectImporter
+		importSTPackages: #('AmberProjectPage')
+		prefix: 'st/'"
+
+	packageNameList do: [:packageName |
+		self importSTPackage: packageName prefix: prefix].
 ! !
 
