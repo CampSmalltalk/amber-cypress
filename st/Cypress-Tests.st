@@ -71,6 +71,8 @@ baseDefinitions
 !
 
 targetDefinitions
+	"remove extra method and modify name: method"
+
 	| className classClassName |
 	className := 'CypressMockBasic'.
 	classClassName := 'CypressMockBasic class'.
@@ -173,9 +175,9 @@ testSnapshot
 
 testPatch
 
-	| baseSnapshot targetSnapshot |
+	| baseSnapshot targetSnapshot patch |
 	baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
 	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
-	CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot
+	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
 ! !
 
