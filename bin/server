@@ -1,2 +1,2 @@
 #!/bin/bash
-node ./amber/server/server.js
+node ./lib/amber/server/server.js

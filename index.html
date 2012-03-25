@@ -1,23 +1,24 @@
 <html> 
   <head> 
-    <script src="lib/js/amber.js" type="text/javascript"></script>
+    <script src="lib/amber/js/amber.js" type="text/javascript"></script>
   </head>
   <body>
     <script type='text/javascript'> loadAmber({
-        files: [
+        packages: [
           'AmberProjectImporter.js'
         ],
-        prefix: 'js',
+        packageHome: 'lib/',
         ready: function() {
           $(function() {
             smalltalk.Browser._open();
             smalltalk.AmberProjectImporter._importSTPackages_prefix_(
-              ['Cypress-Definitions',
+              [ 
+                'Cypress-Definitions',
                 'Cypress-Mocks',
                 'Cypress-Tests'
               ],
               '../st/');
-           });
+          });
         }}) </script>
   </body> 
 </html>

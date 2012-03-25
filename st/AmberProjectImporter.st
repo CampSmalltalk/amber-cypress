@@ -44,13 +44,3 @@ get: ajaxUrl onComplete: completeBlock
 		}
 ! !
 
-!ClassCategoryReader methodsFor: '*AmberProjectImporter'!
-
-compileMethod: aString
-	| method compiler |
-	method := (compiler := Compiler new) load: aString forClass: class.
-	method category: category.
-	class addCompiledMethod: method.
-    	compiler setupClass: class.
-! !
-
