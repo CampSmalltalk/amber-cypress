@@ -1,0 +1,2 @@
+# Compiled .js files don't need to be versioned ... st files are enough
+*.js
