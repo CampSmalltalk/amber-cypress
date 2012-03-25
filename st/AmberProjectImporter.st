@@ -7,18 +7,13 @@ Object subclass: #AmberProjectImporter
 
 importSTPackage: packageName prefix: prefix
 	"AmberProjectImporter
-		importSTPackage: 'AmberProjectPage' 
+		importSTPackage: 'AmberProjectImporter' 
 		prefix: 'st/'"
 
-	jQuery 
-		ajax: prefix, packageName, '.st'
-        	options: #{
-			'type' -> 'GET'.
-    			'complete' -> [ :jqXHR :textStatus | 
-				jqXHR readyState = 4 ifTrue: [ |chunks |
-            				chunks := jqXHR responseText.
-            				Importer new import: chunks readStream ]]
-		}
+	self get: prefix, packageName, '.st' onComplete: [:jqXHR :textStatus | 
+			jqXHR readyState = 4 ifTrue: [ |chunks |
+            			chunks := jqXHR responseText.
+            			Importer new import: chunks readStream ]]
 !
 
 importSTPackages: packageNameList prefix: prefix
@@ -26,7 +21,36 @@ importSTPackages: packageNameList prefix: prefix
 		importSTPackages: #('AmberProjectPage')
 		prefix: 'st/'"
 
-	packageNameList do: [:packageName |
-		self importSTPackage: packageName prefix: prefix].
+	| loadBlock |
+	loadBlock := [:index | | packageName next |
+		packageName := packageNameList at: index.
+Transcript cr; show: 'import ', packageName.
+		self get: prefix, packageName, '.st'  onComplete: [:jqXHR :textStatus | 
+			jqXHR readyState = 4 ifTrue: [ | chunks |
+				Importer new import: jqXHR responseText readStream.
+				next := index + 1.
+				next <= packageNameList size
+					ifTrue: [ loadBlock value: next ]  ]]].
+	packageNameList size >= 1 
+		ifTrue: [ loadBlock value: 1 ]
+!
+
+get: ajaxUrl onComplete: completeBlock
+	jQuery 
+		ajax: ajaxUrl
+        	options: #{
+			'type' -> 'GET'.
+    			'complete' -> [ :jqXHR :textStatus |  completeBlock value: jqXHR value: textStatus]
+		}
+! !
+
+!ClassCategoryReader methodsFor: '*AmberProjectImporter'!
+
+compileMethod: aString
+	| method compiler |
+	method := (compiler := Compiler new) load: aString forClass: class.
+	method category: category.
+	class addCompiledMethod: method.
+    	compiler setupClass: class.
 ! !
 
