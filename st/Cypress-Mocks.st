@@ -7,16 +7,16 @@ This mock contains basic class and instance method selectors!
 
 !CypressMockBasic methodsFor: 'accessing'!
 
-name: aString
-	name := aString
+extra
+	"extra method"
 !
 
 name
 	^name
 !
 
-extra
-	"extra method"
+name: aString
+	name := aString
 ! !
 
 !CypressMockBasic methodsFor: 'initialization'!

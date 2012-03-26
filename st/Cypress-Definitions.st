@@ -1,7 +1,169 @@
 Smalltalk current createPackage: 'Cypress-Definitions' properties: #{}!
-Object subclass: #CypressPatchOperation
+Object subclass: #CypressDefinition
 	instanceVariableNames: ''
 	category: 'Cypress-Definitions'!
+
+!CypressDefinition methodsFor: 'accessing'!
+
+description
+	self subclassResponsibility
+! !
+
+!CypressDefinition methodsFor: 'comparing'!
+
+= aDefinition
+	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
+! !
+
+!CypressDefinition methodsFor: 'testing'!
+
+isRevisionOf: aDefinition
+	^ (aDefinition isKindOf: CypressDefinition) and: [aDefinition description = self description]
+!
+
+isSameRevisionAs: aDefinition
+	^ self = aDefinition
+! !
+
+CypressDefinition subclass: #CypressClassDefinition
+	instanceVariableNames: 'name superclassName category comment instVarNames classInstVarNames'
+	category: 'Cypress-Definitions'!
+
+!CypressClassDefinition methodsFor: 'accessing'!
+
+category
+
+	^category
+!
+
+classInstVarNames
+
+	^classInstVarNames
+!
+
+comment
+
+	^comment
+!
+
+description
+
+	^ Array with: name
+!
+
+instVarNames
+
+	^instVarNames
+!
+
+name
+
+	^name
+!
+
+superclassName
+
+	^superclassName
+! !
+
+!CypressClassDefinition methodsFor: 'comparing'!
+
+= aDefinition
+	^(super = aDefinition)
+		and: [superclassName = aDefinition superclassName
+		and: [category = aDefinition category
+		and: [instVarNames = aDefinition instVarNames
+		and: [classInstVarNames = aDefinition classInstVarNames
+		and: [comment = aDefinition comment]]]]]
+! !
+
+!CypressClassDefinition methodsFor: 'initialization'!
+
+name: aClassName superclassName: aSuperclassName category: aCategory instVarNames: anInstanceVariableNames classInstVarNames: aClassInstanceVariableNames comment: aComment
+
+	name := aClassName.
+	superclassName := aSuperclassName.
+	category := aCategory.
+	instVarNames := anInstanceVariableNames.
+	classInstVarNames := aClassInstanceVariableNames.
+	comment := aComment
+! !
+
+!CypressClassDefinition class methodsFor: 'instance creation'!
+
+name: aClassName 
+superclassName: aSuperclassName
+category: aCategory
+instVarNames: anInstanceVariableNames
+classInstVarNames: aClassInstanceVariableNames
+comment: aComment
+
+	^(self new) 
+		name: aClassName 
+		superclassName: aSuperclassName
+		category: aCategory
+		instVarNames: anInstanceVariableNames
+		classInstVarNames: aClassInstanceVariableNames
+		comment: aComment
+! !
+
+CypressDefinition subclass: #CypressMethodDefinition
+	instanceVariableNames: 'classIsMeta source category selector className'
+	category: 'Cypress-Definitions'!
+
+!CypressMethodDefinition methodsFor: 'accessing'!
+
+category
+
+	^category
+!
+
+description
+	^ Array	
+		with: className
+		with: selector
+		with: classIsMeta
+!
+
+source
+
+	^source
+! !
+
+!CypressMethodDefinition methodsFor: 'comparing'!
+
+= aDefinition
+    ^ super = aDefinition
+        and: [ aDefinition source = self source
+                and: [ aDefinition category = self category ] ]
+! !
+
+!CypressMethodDefinition methodsFor: 'initialization'!
+
+className: aName classIsMeta: isMetaclass selector: aSelector category: aCategory source: aSource
+
+	className := aName.
+	classIsMeta := isMetaclass.
+	selector := aSelector.
+	category := aCategory.
+	source := aSource.
+! !
+
+!CypressMethodDefinition class methodsFor: 'instance creation'!
+
+className: aName
+classIsMeta: isMetaclass
+selector: aSelector
+category: aCategory
+source: aSource
+
+	^(self new)
+		className: aName
+		classIsMeta: isMetaclass
+		selector: aSelector
+		category: aCategory
+		source: aSource
+! !
 
 Object subclass: #CypressDefinitionIndex
 	instanceVariableNames: 'definitionMap'
@@ -9,13 +171,13 @@ Object subclass: #CypressDefinitionIndex
 
 !CypressDefinitionIndex methodsFor: 'accessing'!
 
-definitions
-	^self definitionMap values
-!
-
 definitionMap
 	definitionMap ifNil: [ definitionMap := Dictionary new ].
 	^ definitionMap
+!
+
+definitions
+	^self definitionMap values
 ! !
 
 !CypressDefinitionIndex methodsFor: 'adding'!
@@ -48,74 +210,6 @@ remove: aDefinition
 
 definitions: aCollection
 	^ self new addAll: aCollection
-! !
-
-Object subclass: #CypressPatch
-	instanceVariableNames: 'operations'
-	category: 'Cypress-Definitions'!
-
-!CypressPatch methodsFor: 'accessing'!
-
-operations
-
-	^operations
-! !
-
-!CypressPatch methodsFor: 'initialization'!
-
-fromBase: baseSnapshot toTarget: targetSnapshot
-	| base target |	
-	operations := OrderedCollection new.
-	base := CypressDefinitionIndex definitions: baseSnapshot definitions.
-	target := CypressDefinitionIndex definitions: targetSnapshot definitions.
-	
-	target definitions do:
-		[:t |
-		base
-			definitionLike: t
-			ifPresent: [:b | (b isSameRevisionAs: t) ifFalse: [operations add: (CypressModification of: b to: t)]]
-			ifAbsent: [operations add: (CypressAddition of: t)]].
-		
-	base definitions do:
-		[:b |
-		target
-			definitionLike: b
-			ifPresent: [:t | ]
-			ifAbsent: [operations add: (CypressRemoval of: b)]]
-! !
-
-!CypressPatch class methodsFor: 'instance creation'!
-
-fromBase: baseSnapshot toTarget: targetSnapshot
-	^ (self new)
-		fromBase: baseSnapshot
-		toTarget: targetSnapshot
-! !
-
-Object subclass: #CypressDefinition
-	instanceVariableNames: ''
-	category: 'Cypress-Definitions'!
-
-!CypressDefinition methodsFor: 'accessing'!
-
-description
-	self subclassResponsibility
-! !
-
-!CypressDefinition methodsFor: 'comparing'!
-
-= aDefinition
-	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
-! !
-
-!CypressDefinition methodsFor: 'testing'!
-
-isRevisionOf: aDefinition
-	^ (aDefinition isKindOf: CypressDefinition) and: [aDefinition description = self description]
-!
-
-isSameRevisionAs: aDefinition
-	^ self = aDefinition
 ! !
 
 Object subclass: #CypressPackage
@@ -166,168 +260,51 @@ snapshot
 	^ CypressSnapshot definitions: definitions
 ! !
 
-Object subclass: #CypressSnapshot
-	instanceVariableNames: 'definitions'
+Object subclass: #CypressPatch
+	instanceVariableNames: 'operations'
 	category: 'Cypress-Definitions'!
 
-!CypressSnapshot methodsFor: 'accessing'!
+!CypressPatch methodsFor: 'accessing'!
 
-definitions: aDefinitions
+operations
 
-	definitions := aDefinitions
-!
-
-definitions
-
-	^definitions
+	^operations
 ! !
 
-!CypressSnapshot class methodsFor: 'instance creation'!
+!CypressPatch methodsFor: 'initialization'!
 
-definitions: aDefinitions
-
-	^(self new) definitions: aDefinitions
+fromBase: baseSnapshot toTarget: targetSnapshot
+	| base target |	
+	operations := OrderedCollection new.
+	base := CypressDefinitionIndex definitions: baseSnapshot definitions.
+	target := CypressDefinitionIndex definitions: targetSnapshot definitions.
+	
+	target definitions do:
+		[:t |
+		base
+			definitionLike: t
+			ifPresent: [:b | (b isSameRevisionAs: t) ifFalse: [operations add: (CypressModification of: b to: t)]]
+			ifAbsent: [operations add: (CypressAddition of: t)]].
+		
+	base definitions do:
+		[:b |
+		target
+			definitionLike: b
+			ifPresent: [:t | ]
+			ifAbsent: [operations add: (CypressRemoval of: b)]]
 ! !
 
-CypressDefinition subclass: #CypressClassDefinition
-	instanceVariableNames: 'name superclassName category comment instVarNames classInstVarNames'
+!CypressPatch class methodsFor: 'instance creation'!
+
+fromBase: baseSnapshot toTarget: targetSnapshot
+	^ (self new)
+		fromBase: baseSnapshot
+		toTarget: targetSnapshot
+! !
+
+Object subclass: #CypressPatchOperation
+	instanceVariableNames: ''
 	category: 'Cypress-Definitions'!
-
-!CypressClassDefinition methodsFor: 'accessing'!
-
-superclassName
-
-	^superclassName
-!
-
-name
-
-	^name
-!
-
-category
-
-	^category
-!
-
-comment
-
-	^comment
-!
-
-description
-
-	^ Array with: name
-!
-
-instVarNames
-
-	^instVarNames
-!
-
-classInstVarNames
-
-	^classInstVarNames
-! !
-
-!CypressClassDefinition methodsFor: 'comparing'!
-
-= aDefinition
-	^(super = aDefinition)
-		and: [superclassName = aDefinition superclassName
-		and: [category = aDefinition category
-		and: [instVarNames = aDefinition instVarNames
-		and: [classInstVarNames = aDefinition classInstVarNames
-		and: [comment = aDefinition comment]]]]]
-! !
-
-!CypressClassDefinition methodsFor: 'initialization'!
-
-name: aClassName superclassName: aSuperclassName category: aCategory instVarNames: anInstanceVariableNames classInstVarNames: aClassInstanceVariableNames comment: aComment
-
-	name := aClassName.
-	superclassName := aSuperclassName.
-	category := aCategory.
-	instVarNames := anInstanceVariableNames.
-	classInstVarNames := aClassInstanceVariableNames.
-	comment := aComment
-! !
-
-!CypressClassDefinition class methodsFor: 'instance creation'!
-
-name: aClassName 
-superclassName: aSuperclassName
-category: aCategory
-instVarNames: anInstanceVariableNames
-classInstVarNames: aClassInstanceVariableNames
-comment: aComment
-
-	^(self new) 
-		name: aClassName 
-		superclassName: aSuperclassName
-		category: aCategory
-		instVarNames: anInstanceVariableNames
-		classInstVarNames: aClassInstanceVariableNames
-		comment: aComment
-! !
-
-CypressDefinition subclass: #CypressMethodDefinition
-	instanceVariableNames: 'classIsMeta source category selector className'
-	category: 'Cypress-Definitions'!
-
-!CypressMethodDefinition methodsFor: 'accessing'!
-
-source
-
-	^source
-!
-
-category
-
-	^category
-!
-
-description
-	^ Array	
-		with: className
-		with: selector
-		with: classIsMeta
-! !
-
-!CypressMethodDefinition methodsFor: 'comparing'!
-
-= aDefinition
-    ^ super = aDefinition
-        and: [ aDefinition source = self source
-                and: [ aDefinition category = self category ] ]
-! !
-
-!CypressMethodDefinition methodsFor: 'initialization'!
-
-className: aName classIsMeta: isMetaclass selector: aSelector category: aCategory source: aSource
-
-	className := aName.
-	classIsMeta := isMetaclass.
-	selector := aSelector.
-	category := aCategory.
-	source := aSource.
-! !
-
-!CypressMethodDefinition class methodsFor: 'instance creation'!
-
-className: aName
-classIsMeta: isMetaclass
-selector: aSelector
-category: aCategory
-source: aSource
-
-	^(self new)
-		className: aName
-		classIsMeta: isMetaclass
-		selector: aSelector
-		category: aCategory
-		source: aSource
-! !
 
 CypressPatchOperation subclass: #CypressAddition
 	instanceVariableNames: 'definition'
@@ -379,6 +356,29 @@ definition: aDefinition
 
 of: aDefinition
 	^ self new definition: aDefinition
+! !
+
+Object subclass: #CypressSnapshot
+	instanceVariableNames: 'definitions'
+	category: 'Cypress-Definitions'!
+
+!CypressSnapshot methodsFor: 'accessing'!
+
+definitions
+
+	^definitions
+!
+
+definitions: aDefinitions
+
+	definitions := aDefinitions
+! !
+
+!CypressSnapshot class methodsFor: 'instance creation'!
+
+definitions: aDefinitions
+
+	^(self new) definitions: aDefinitions
 ! !
 
 !Object methodsFor: '*Cypress-Definitions'!

@@ -71,7 +71,7 @@ baseDefinitions
 !
 
 targetDefinitions
-	"remove extra method and modify name: method"
+	"remove #extra method and modify #name: method"
 
 	| className classClassName |
 	className := 'CypressMockBasic'.
@@ -133,14 +133,6 @@ targetDefinitions
 
 !CypressDefinitionTest methodsFor: 'testing'!
 
-testNameEquality
-	| pkg name |
-	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
-	self assert: pkg name equals: name.
-	self deny: (pkg name = 'Nope.').
-!
-
 testEquality
 	| pkg1 pkg2 pkg3 name |
 	name := 'Cypress-Mocks'.
@@ -150,6 +142,22 @@ testEquality
 
 	self assert: pkg1 equals: pkg2.
 	self deny: pkg1 = pkg3
+!
+
+testNameEquality
+	| pkg name |
+	name := 'Cypress-Mocks'.
+	pkg := CypressPackage new name: name.
+	self assert: pkg name equals: name.
+	self deny: (pkg name = 'Nope.').
+!
+
+testPatch
+
+	| baseSnapshot targetSnapshot patch |
+	baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
+	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
+	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
 !
 
 testPrintString
@@ -171,13 +179,5 @@ testSnapshot
 			ifFalse: [ 
 				def inspect.
 				self assert: false ]].
-!
-
-testPatch
-
-	| baseSnapshot targetSnapshot patch |
-	baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
-	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
-	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
 ! !
 
