@@ -70,6 +70,38 @@ baseDefinitions
 	}
 !
 
+baseTargetPatch
+	| className classClassName |
+	className := 'CypressMockBasic'.
+	classClassName := 'CypressMockBasic class'.
+	^{
+		(CypressModification 
+			of: (CypressMethodDefinition
+          			className: className
+        			classIsMeta: false
+        			selector: 'name:'
+        			category: 'accessing'
+        			source:'name: aString
+	name := aString') 
+			to: (CypressMethodDefinition
+          			className: className
+        			classIsMeta: false
+        			selector: 'name:'
+        			category: 'accessing'
+        			source:'name: aString
+	"changed method"
+	name := aString')).
+		(CypressRemoval 
+			of: (CypressMethodDefinition
+          			className: className
+        			classIsMeta: false
+        			selector: 'extra'
+        			category: 'accessing'
+        			source:'extra
+	"extra method"'))
+	}
+!
+
 targetDefinitions
 	"remove #extra method and modify #name: method"
 
@@ -179,6 +211,7 @@ testPatch
 	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
 	operations := patch operations.
 	self assert: operations size = 2.
+	self assert: operations = self baseTargetPatch
 !
 
 testPrintString
