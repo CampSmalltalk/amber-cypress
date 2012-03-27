@@ -89,6 +89,20 @@ name: aClassName superclassName: aSuperclassName category: aCategory instVarName
 	comment := aComment
 ! !
 
+!CypressClassDefinition methodsFor: 'printString'!
+
+printString
+
+	| str |
+	str := StringStream on: String new.
+	str 
+		nextPutAll: super printString;
+		nextPutAll: ' (';
+		nextPutAll: self name;
+		nextPutAll: ')'.
+	^str contents
+! !
+
 !CypressClassDefinition class methodsFor: 'instance creation'!
 
 name: aClassName 
@@ -118,11 +132,26 @@ category
 	^category
 !
 
+classIsMeta
+
+	^classIsMeta
+!
+
+className
+
+	^className
+!
+
 description
 	^ Array	
 		with: className
 		with: selector
 		with: classIsMeta
+!
+
+selector
+
+	^selector
 !
 
 source
@@ -147,6 +176,25 @@ className: aName classIsMeta: isMetaclass selector: aSelector category: aCategor
 	selector := aSelector.
 	category := aCategory.
 	source := aSource.
+! !
+
+!CypressMethodDefinition methodsFor: 'printing'!
+
+printString
+
+	| str |
+	str := StringStream on: String new.
+	str 
+		nextPutAll: super printString;
+		nextPutAll: ' (';
+		nextPutAll: self className.
+	self classIsMeta
+		ifTrue: [ str nextPutAll: ' class' ].
+	str 
+		nextPutAll: '>>';
+		nextPutAll: self selector;
+		nextPutAll: ')'.
+	^str contents
 ! !
 
 !CypressMethodDefinition class methodsFor: 'instance creation'!
@@ -241,22 +289,25 @@ printString
 !CypressPackage methodsFor: 'snapshoting'!
 
 snapshot
-	| package definitions name  |
+	| package definitions name map  |
 	package := Package named: self name.
 	definitions := OrderedCollection new.
 	package sortedClasses do: [:cls |
         	definitions add: cls asCypressClassDefinition.
-                cls methodDictionary values do: [:method |
+                ((cls methodDictionary values) sorted: [:a :b | a selector <= b selector]) do: [:method |
 			(method category match: '^\*') ifFalse: [ 
 				definitions add: method asCypressMethodDefinition ]].
-                cls class methodDictionary values do: [:method |
+                ((cls class methodDictionary values) sorted: [:a :b | a selector <= b selector]) do: [:method |
 			(method category match: '^\*') ifFalse: [ 
 				definitions add: method asCypressMethodDefinition ]]].
 	name := package name.
-	Smalltalk current classes, (Smalltalk current classes collect: [:each | each class]) do: [:each |
-		each methodDictionary values do: [:method |
-			method category = ('*', name) ifTrue: [
-				definitions add: method asCypressMethodDefinition ]]].
+	(Package sortedClasses: Smalltalk current classes) do: [:each |
+		{each. each class} do: [:aClass |
+			map := Dictionary new.
+			aClass protocolsDo: [:category :methods | 
+				(category match: '^\*', name) ifTrue: [ map at: category put: methods ]].
+			(map keys sorted: [:a :b | a <= b ])  do: [:category | 
+				((map at: category) sorted: [:a :b | a selector <= b selector]) do: [:method |  definitions add: method asCypressMethodDefinition ]]]].
 	^ CypressSnapshot definitions: definitions
 ! !
 
@@ -372,6 +423,12 @@ definitions
 definitions: aDefinitions
 
 	definitions := aDefinitions
+! !
+
+!CypressSnapshot methodsFor: 'comparing'!
+
+= other
+	^ definitions asArray = other definitions asArray
 ! !
 
 !CypressSnapshot class methodsFor: 'instance creation'!

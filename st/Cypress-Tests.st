@@ -18,26 +18,12 @@ baseDefinitions
 			classInstVarNames: #('current')
         		comment: 'This mock contains basic class and instance method selectors').
    	 	(CypressMethodDefinition
-          		className: classClassName
-        		classIsMeta: true
-        		selector: 'initialize'
-        		category: 'initialization'
-        		source:'initialize
-	self current: self new').
-   	 	(CypressMethodDefinition
-          		className: classClassName
-        		classIsMeta: true
-        		selector: 'current'
+          		className: className
+        		classIsMeta: false
+        		selector: 'extra'
         		category: 'accessing'
-        		source:'current
-	^current').
-   	 	(CypressMethodDefinition
-          		className: classClassName
-        		classIsMeta: true
-        		selector: 'current:'
-        		category: 'accessing'
-        		source:'current: anObject
-	current := anObject').
+        		source:'extra
+	"extra method"').
    	 	(CypressMethodDefinition
           		className: className
         		classIsMeta: false
@@ -61,12 +47,26 @@ baseDefinitions
         		source:'name: aString
 	name := aString').
    	 	(CypressMethodDefinition
-          		className: className
-        		classIsMeta: false
-        		selector: 'extra'
+          		className: classClassName
+        		classIsMeta: true
+        		selector: 'current'
         		category: 'accessing'
-        		source:'extra
-	"extra method"')
+        		source:'current
+	^current').
+   	 	(CypressMethodDefinition
+          		className: classClassName
+        		classIsMeta: true
+        		selector: 'current:'
+        		category: 'accessing'
+        		source:'current: anObject
+	current := anObject').
+   	 	(CypressMethodDefinition
+          		className: classClassName
+        		classIsMeta: true
+        		selector: 'initialize'
+        		category: 'initialization'
+        		source:'initialize
+	self current: self new')
 	}
 !
 
@@ -84,27 +84,6 @@ targetDefinitions
                        	instVarNames: #('name')
 			classInstVarNames: #('current')
         		comment: 'This mock contains basic class and instance method selectors').
-   	 	(CypressMethodDefinition
-          		className: classClassName
-        		classIsMeta: true
-        		selector: 'initialize'
-        		category: 'initialization'
-        		source:'initialize
-	self current: self new').
-   	 	(CypressMethodDefinition
-          		className: classClassName
-        		classIsMeta: true
-        		selector: 'current'
-        		category: 'accessing'
-        		source:'current
-	^current').
-   	 	(CypressMethodDefinition
-          		className: classClassName
-        		classIsMeta: true
-        		selector: 'current:'
-        		category: 'accessing'
-        		source:'current: anObject
-	current := anObject').
    	 	(CypressMethodDefinition
           		className: className
         		classIsMeta: false
@@ -127,11 +106,42 @@ targetDefinitions
         		category: 'accessing'
         		source:'name: aString
 	"changed method"
-	name := aString')
+	name := aString').
+   	 	(CypressMethodDefinition
+          		className: classClassName
+        		classIsMeta: true
+        		selector: 'current'
+        		category: 'accessing'
+        		source:'current
+	^current').
+   	 	(CypressMethodDefinition
+          		className: classClassName
+        		classIsMeta: true
+        		selector: 'current:'
+        		category: 'accessing'
+        		source:'current: anObject
+	current := anObject').
+   	 	(CypressMethodDefinition
+          		className: classClassName
+        		classIsMeta: true
+        		selector: 'initialize'
+        		category: 'initialization'
+        		source:'initialize
+	self current: self new')
 	}
 ! !
 
 !CypressDefinitionTest methodsFor: 'testing'!
+
+testClassDefinition
+	self assert: (CypressClassDefinition
+		name: 'Foo'
+       		 superclassName: 'Object'
+       		category: 'Foo'
+                instVarNames: #()
+		classInstVarNames: #()
+        	comment: '') printString =  'a CypressClassDefinition (Foo)'
+!
 
 testEquality
 	| pkg1 pkg2 pkg3 name |
@@ -144,6 +154,15 @@ testEquality
 	self deny: pkg1 = pkg3
 !
 
+testMethodDefinition
+	self assert: (CypressMethodDefinition
+		className: 'Foo'
+		classIsMeta: false
+		selector: 'isFoo'
+		category: 'testing'
+		source: 'isFoo ^true') printString = 'a CypressMethodDefinition (Foo>>isFoo)'
+!
+
 testNameEquality
 	| pkg name |
 	name := 'Cypress-Mocks'.
@@ -154,10 +173,12 @@ testNameEquality
 
 testPatch
 
-	| baseSnapshot targetSnapshot patch |
+	| baseSnapshot targetSnapshot patch operations |
 	baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
 	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
 	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
+	operations := patch operations.
+	self assert: operations size = 2.
 !
 
 testPrintString
@@ -179,5 +200,14 @@ testSnapshot
 			ifFalse: [ 
 				def inspect.
 				self assert: false ]].
+!
+
+testSnapshotEquality
+	| name pkg packageDefinitions expectedDefinitions |
+	name := 'Cypress-Mocks'.
+	pkg := CypressPackage new name: name.
+	packageDefinitions := pkg snapshot definitions.
+	expectedDefinitions := self baseDefinitions.
+	self assert: packageDefinitions = expectedDefinitions
 ! !
 
