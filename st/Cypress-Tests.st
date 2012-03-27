@@ -1,7 +1,7 @@
 Smalltalk current createPackage: 'Cypress-Tests' properties: #{}!
 TestCase subclass: #CypressDefinitionTest
 	instanceVariableNames: ''
-	category: 'Cypress-Tests'!
+	package: 'Cypress-Tests'!
 
 !CypressDefinitionTest methodsFor: 'private'!
 

@@ -1,9 +1,18 @@
 Smalltalk current createPackage: 'AmberProjectImporter' properties: #{}!
 Object subclass: #AmberProjectImporter
 	instanceVariableNames: ''
-	category: 'AmberProjectImporter'!
+	package: 'AmberProjectImporter'!
 
 !AmberProjectImporter class methodsFor: 'not yet classified'!
+
+get: ajaxUrl onComplete: completeBlock
+	jQuery 
+		ajax: ajaxUrl
+        	options: #{
+			'type' -> 'GET'.
+    			'complete' -> [ :jqXHR :textStatus |  completeBlock value: jqXHR value: textStatus]
+		}
+!
 
 importSTPackage: packageName prefix: prefix
 	"AmberProjectImporter
@@ -33,14 +42,5 @@ Transcript cr; show: 'import ', packageName.
 					ifTrue: [ loadBlock value: next ]  ]]].
 	packageNameList size >= 1 
 		ifTrue: [ loadBlock value: 1 ]
-!
-
-get: ajaxUrl onComplete: completeBlock
-	jQuery 
-		ajax: ajaxUrl
-        	options: #{
-			'type' -> 'GET'.
-    			'complete' -> [ :jqXHR :textStatus |  completeBlock value: jqXHR value: textStatus]
-		}
 ! !
 

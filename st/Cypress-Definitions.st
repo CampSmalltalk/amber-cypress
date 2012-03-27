@@ -1,7 +1,7 @@
 Smalltalk current createPackage: 'Cypress-Definitions' properties: #{}!
 Object subclass: #CypressDefinition
 	instanceVariableNames: ''
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressDefinition methodsFor: 'accessing'!
 
@@ -27,7 +27,7 @@ isSameRevisionAs: aDefinition
 
 CypressDefinition subclass: #CypressClassDefinition
 	instanceVariableNames: 'name superclassName category comment instVarNames classInstVarNames'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressClassDefinition methodsFor: 'accessing'!
 
@@ -109,7 +109,7 @@ comment: aComment
 
 CypressDefinition subclass: #CypressMethodDefinition
 	instanceVariableNames: 'classIsMeta source category selector className'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressMethodDefinition methodsFor: 'accessing'!
 
@@ -167,7 +167,7 @@ source: aSource
 
 Object subclass: #CypressDefinitionIndex
 	instanceVariableNames: 'definitionMap'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressDefinitionIndex methodsFor: 'accessing'!
 
@@ -214,7 +214,7 @@ definitions: aCollection
 
 Object subclass: #CypressPackage
 	instanceVariableNames: 'name'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressPackage methodsFor: 'accessing'!
 
@@ -262,7 +262,7 @@ snapshot
 
 Object subclass: #CypressPatch
 	instanceVariableNames: 'operations'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressPatch methodsFor: 'accessing'!
 
@@ -304,11 +304,11 @@ fromBase: baseSnapshot toTarget: targetSnapshot
 
 Object subclass: #CypressPatchOperation
 	instanceVariableNames: ''
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 CypressPatchOperation subclass: #CypressAddition
 	instanceVariableNames: 'definition'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressAddition methodsFor: 'initialization'!
 
@@ -325,7 +325,7 @@ of: aDefinition
 
 CypressPatchOperation subclass: #CypressModification
 	instanceVariableNames: 'obsoletion modification'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressModification methodsFor: 'initialization'!
 
@@ -343,7 +343,7 @@ of: base to: target
 
 CypressPatchOperation subclass: #CypressRemoval
 	instanceVariableNames: 'definition'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressRemoval methodsFor: 'initialization'!
 
@@ -360,7 +360,7 @@ of: aDefinition
 
 Object subclass: #CypressSnapshot
 	instanceVariableNames: 'definitions'
-	category: 'Cypress-Definitions'!
+	package: 'Cypress-Definitions'!
 
 !CypressSnapshot methodsFor: 'accessing'!
 
@@ -400,6 +400,13 @@ asCypressClassDefinition
 		comment: self comment
 ! !
 
+!CharacterArray methodsFor: '*Cypress-Definitions'!
+
+sameAs: aString
+
+	^self asUppercase = aString asUppercase
+! !
+
 !CompiledMethod methodsFor: '*Cypress-Definitions'!
 
 asCypressMethodDefinition
@@ -410,12 +417,5 @@ asCypressMethodDefinition
 		selector: self selector
 		category: self category
 		source: self source
-! !
-
-!CharacterArray methodsFor: '*Cypress-Definitions'!
-
-sameAs: aString
-
-	^self asUppercase = aString asUppercase
 ! !
 

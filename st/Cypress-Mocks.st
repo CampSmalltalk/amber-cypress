@@ -1,7 +1,7 @@
 Smalltalk current createPackage: 'Cypress-Mocks' properties: #{}!
 Object subclass: #CypressMockBasic
 	instanceVariableNames: 'name'
-	category: 'Cypress-Mocks'!
+	package: 'Cypress-Mocks'!
 !CypressMockBasic commentStamp!
 This mock contains basic class and instance method selectors!
 
