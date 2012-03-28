@@ -15,6 +15,14 @@ description
 	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
 ! !
 
+!CypressDefinition methodsFor: 'loading'!
+
+provisions
+	"Answer list of global names defined by this definition"
+
+	^#()
+! !
+
 !CypressDefinition methodsFor: 'testing'!
 
 isRevisionOf: aDefinition
@@ -87,6 +95,14 @@ name: aClassName superclassName: aSuperclassName category: aCategory instVarName
 	instVarNames := anInstanceVariableNames.
 	classInstVarNames := aClassInstanceVariableNames.
 	comment := aComment
+! !
+
+!CypressClassDefinition methodsFor: 'loading'!
+
+provisions
+	"Answer list of global names defined by this definition"
+
+	^{ self name }
 ! !
 
 !CypressClassDefinition methodsFor: 'printString'!
@@ -260,18 +276,96 @@ definitions: aCollection
 	^ self new addAll: aCollection
 ! !
 
-Object subclass: #CypressLoader
-	instanceVariableNames: 'obsoletions additions removals'
+Object subclass: #CypressDependencySorter
+	instanceVariableNames: 'required provided orderedItems'
 	package: 'Cypress-Definitions'!
+
+!CypressDependencySorter methodsFor: 'building'!
+
+add: anItem
+	| requirements |
+	requirements := self unresolvedRequirementsFor: anItem.
+	requirements isEmpty
+		ifTrue: [self addToOrder: anItem]
+		ifFalse: [self addRequirements: requirements for: anItem].
+	^ anItem
+!
+
+addAll: aCollection
+	aCollection do: [:ea | self add: ea]
+! !
+
+Object subclass: #CypressLoader
+	instanceVariableNames: 'additions removals unloadable provisions errorDefinitions methodAdditions'
+	package: 'Cypress-Definitions'!
+
+!CypressLoader methodsFor: 'accessing'!
+
+additions
+
+	additions ifNil: [ additions := OrderedCollection new ].
+	^additions
+!
+
+provisions
+	^ provisions ifNil: [provisions := (Smalltalk current classes collect: [:cl | cl name]) asSet ]
+!
+
+removals
+
+	removals ifNil: [ removals := OrderedCollection new ].
+	^removals
+!
+
+unloadable
+
+	unloadable ifNil: [ unloadable := OrderedCollection new ].
+	^unloadable
+! !
+
+!CypressLoader methodsFor: 'applying'!
+
+applyAddition: aCypressPatchOperation
+
+	self additions add: aCypressPatchOperation
+!
+
+applyModification: aCypressPatchOperation
+
+	self additions add: aCypressPatchOperation
+!
+
+applyRemoval: aCypressPatchOperation
+
+	self removals add: aCypressPatchOperation
+! !
 
 !CypressLoader methodsFor: 'loading'!
 
+basicLoad
+	errorDefinitions := OrderedCollection new.
+	self additions do: [:ea | self loadClassDefinition: ea ]. "load class definitions first"
+	self additions do: [:ea | self loadMethodDefinition: ea ] . "load method definitions now"
+	self removals do: [:ea | self unloadDefinition: ea ]. "now we can remove things"
+	self warnAboutErrors.
+	errorDefinitions do: [:ea | ea addMethodAdditionTo: methodAdditions]. "not sure about methodAddtions...yet"
+	self methodAdditions do: [:ea | self loadMethodAddition: ea ]. "ditto"
+	self additions do: [:ea | self postLoad: ea ]. "this is where the obsoletion is taken into account ..."
+!
+
+load
+
+	self analyze.
+	self unloadableDefinitions isEmpty ifFalse: [self unloadableDefinitionsError].
+	self basicLoad
+!
+
 updatePackage: aPackage withSnapshot: aSnapshot
-	|  patch packageSnap |
-	packageSnap := aPackage snapshot.
-	patch := aSnapshot patchRelativeToBase: packageSnap.
+	|  patch snapshot |
+	snapshot := aPackage snapshot.
+	patch := aSnapshot patchRelativeToBase: snapshot.
 	patch applyTo: self.
-	packageSnap definitions do: [:ea | self provisions addAll: ea provisions]
+	snapshot definitions do: [:ea | self provisions addAll: ea provisions]
 ! !
 
 !CypressLoader class methodsFor: 'loading'!
@@ -344,6 +438,12 @@ operations
 	^operations
 ! !
 
+!CypressPatch methodsFor: 'applying'!
+
+applyTo: aCypressLoader
+	operations do: [:ea | ea applyTo: aCypressLoader].
+! !
+
 !CypressPatch methodsFor: 'initialization'!
 
 fromBase: baseSnapshot toTarget: targetSnapshot
@@ -386,6 +486,13 @@ description
 	self subclassResponsibility
 ! !
 
+!CypressPatchOperation methodsFor: 'applying'!
+
+applyTo: aCypressLoader
+
+	self subclassResponsibility
+! !
+
 !CypressPatchOperation methodsFor: 'comparing'!
 
 = aPatchOperation
@@ -406,6 +513,13 @@ definition
 description
 
 	^'add: ', self definition description
+! !
+
+!CypressAddition methodsFor: 'applying'!
+
+applyTo: aCypressLoader
+
+	aCypressLoader applyAddition: self
 ! !
 
 !CypressAddition methodsFor: 'comparing'!
@@ -462,6 +576,13 @@ obsoletion
 	^obsoletion
 ! !
 
+!CypressModification methodsFor: 'applying'!
+
+applyTo: aCypressLoader
+
+	aCypressLoader applyModification: self
+! !
+
 !CypressModification methodsFor: 'initialization'!
 
 = aPatchOperation
@@ -508,6 +629,13 @@ definition
 description
 
 	^'remove: ', self definition description
+! !
+
+!CypressRemoval methodsFor: 'applying'!
+
+applyTo: aCypressLoader
+
+	aCypressLoader applyRemoval: self
 ! !
 
 !CypressRemoval methodsFor: 'comparing'!
@@ -574,7 +702,7 @@ updatePackage: aPackage
 !CypressSnapshot methodsFor: 'patching'!
 
 patchRelativeToBase: aSnapshot
-	^ CypressPatch fromBase: aSnapshot target: self
+	^ CypressPatch fromBase: aSnapshot toTarget: self
 ! !
 
 !CypressSnapshot class methodsFor: 'instance creation'!
