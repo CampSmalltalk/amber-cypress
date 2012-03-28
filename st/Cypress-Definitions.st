@@ -260,6 +260,28 @@ definitions: aCollection
 	^ self new addAll: aCollection
 ! !
 
+Object subclass: #CypressLoader
+	instanceVariableNames: 'obsoletions additions removals'
+	package: 'Cypress-Definitions'!
+
+!CypressLoader methodsFor: 'loading'!
+
+updatePackage: aPackage withSnapshot: aSnapshot
+	|  patch packageSnap |
+	packageSnap := aPackage snapshot.
+	patch := aSnapshot patchRelativeToBase: packageSnap.
+	patch applyTo: self.
+	packageSnap definitions do: [:ea | self provisions addAll: ea provisions]
+! !
+
+!CypressLoader class methodsFor: 'loading'!
+
+updatePackage: aPackage withSnapshot: aSnapshot
+	self new
+		updatePackage: aPackage withSnapshot: aSnapshot;
+		load
+! !
+
 Object subclass: #CypressPackage
 	instanceVariableNames: 'name'
 	package: 'Cypress-Definitions'!
@@ -286,7 +308,7 @@ printString
 	^super printString, '(', name, ')'
 ! !
 
-!CypressPackage methodsFor: 'snapshoting'!
+!CypressPackage methodsFor: 'snapshotting'!
 
 snapshot
 	| package definitions name map  |
@@ -541,6 +563,18 @@ definitions: aDefinitions
 
 = other
 	^ definitions asArray = other definitions asArray
+! !
+
+!CypressSnapshot methodsFor: 'loading'!
+
+updatePackage: aPackage
+	CypressLoader updatePackage: aPackage withSnapshot: self
+! !
+
+!CypressSnapshot methodsFor: 'patching'!
+
+patchRelativeToBase: aSnapshot
+	^ CypressPatch fromBase: aSnapshot target: self
 ! !
 
 !CypressSnapshot class methodsFor: 'instance creation'!
