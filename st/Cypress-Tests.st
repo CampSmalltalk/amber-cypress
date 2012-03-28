@@ -75,6 +75,14 @@ baseTargetPatch
 	className := 'CypressMockBasic'.
 	classClassName := 'CypressMockBasic class'.
 	^{
+		(CypressAddition 
+			of: (CypressMethodDefinition
+          			className: className
+        			classIsMeta: false
+        			selector: 'added'
+        			category: 'accessing'
+        			source:'added
+	"added method"')).
 		(CypressModification 
 			of: (CypressMethodDefinition
           			className: className
@@ -116,6 +124,13 @@ targetDefinitions
                        	instVarNames: #('name')
 			classInstVarNames: #('current')
         		comment: 'This mock contains basic class and instance method selectors').
+   	 	(CypressMethodDefinition
+          		className: className
+        		classIsMeta: false
+        		selector: 'added'
+        		category: 'accessing'
+        		source:'added
+	"added method"').
    	 	(CypressMethodDefinition
           		className: className
         		classIsMeta: false
@@ -179,6 +194,24 @@ testClassDefinition
         	comment: '') printString =  'a CypressClassDefinition (Foo)'
 !
 
+testDictionaryOfDefinitions
+
+	| dict |
+	"baseDefinitions"
+	dict := Dictionary new.
+	self baseDefinitions do: [:each | 
+		dict at: each put: each ].
+	self baseDefinitions do: [:each | 
+		self assert: (dict at: each) = each ].
+
+	"targetDefinitions"
+	dict := Dictionary new.
+	self targetDefinitions do: [:each | 
+		dict at: each put: each ].
+	self targetDefinitions do: [:each | 
+		self assert: (dict at: each) = each ].
+!
+
 testEquality
 	| pkg1 pkg2 pkg3 name |
 	name := 'Cypress-Mocks'.
@@ -234,6 +267,17 @@ CypressAbstractTest subclass: #CypressPatchTest
 
 !CypressPatchTest methodsFor: 'testing'!
 
+testDictionaryOfPatchOperations
+	"loader uses dictionary for managing patch operations ... ensure that Amber Dictionaries stand up"
+
+	| dict |
+	dict := Dictionary new.
+	self baseTargetPatch do: [:each | 
+		dict at: each put: each ].
+	self baseTargetPatch do: [:each | 
+		self assert: (dict at: each) = each ].
+!
+
 testPatch
 
 	| baseSnapshot targetSnapshot patch operations |
@@ -241,7 +285,7 @@ testPatch
 	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
 	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
 	operations := patch operations.
-	self assert: operations size = 2.
+	self assert: operations size = 3.
 	self assert: operations = self baseTargetPatch
 !
 

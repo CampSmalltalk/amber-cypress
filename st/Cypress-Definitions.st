@@ -293,10 +293,14 @@ add: anItem
 
 addAll: aCollection
 	aCollection do: [:ea | self add: ea]
+!
+
+unresolvedRequirementsFor: aCypressPatchOperation
+	^ aCypressPatchOperation requirements difference: provided
 ! !
 
 Object subclass: #CypressLoader
-	instanceVariableNames: 'additions removals unloadable provisions errorDefinitions methodAdditions'
+	instanceVariableNames: 'additions removals unloadable provisions errorDefinitions methodAdditions requirements'
 	package: 'Cypress-Definitions'!
 
 !CypressLoader methodsFor: 'accessing'!
@@ -342,6 +346,34 @@ applyRemoval: aCypressPatchOperation
 
 !CypressLoader methodsFor: 'loading'!
 
+analyze
+
+	self 
+		analyzeAdditions;
+		analyzeRemovals
+!
+
+analyzeAdditions
+
+	| sorter |
+	sorter := CypressDependencySorter new 
+		addAll: self additions;
+		addExternalProvisions: self provisions;
+		yourself.
+	additions := sorter orderedItems.
+	requirements := sorter externalRequirements.
+	unloadable := sorter itemsWithMissingRequirements.
+!
+
+analyzeRemovals
+
+	| sorter |
+	sorter := CypressDependencySorter new 
+		addAll: self removals;
+		yourself.
+	removals := sorter orderedItems reversed.
+!
+
 basicLoad
 	errorDefinitions := OrderedCollection new.
 	self additions do: [:ea | self loadClassDefinition: ea ]. "load class definitions first"
@@ -356,7 +388,7 @@ basicLoad
 load
 
 	self analyze.
-	self unloadableDefinitions isEmpty ifFalse: [self unloadableDefinitionsError].
+	self unloadable isEmpty ifFalse: [self unloadableDefinitionsError].
 	self basicLoad
 !
 
