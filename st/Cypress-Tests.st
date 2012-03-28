@@ -1,9 +1,9 @@
 Smalltalk current createPackage: 'Cypress-Tests' properties: #{}!
-TestCase subclass: #CypressDefinitionTest
+TestCase subclass: #CypressAbstractTest
 	instanceVariableNames: ''
 	package: 'Cypress-Tests'!
 
-!CypressDefinitionTest methodsFor: 'private'!
+!CypressAbstractTest methodsFor: 'private'!
 
 baseDefinitions
 	| className classClassName |
@@ -163,6 +163,10 @@ targetDefinitions
 	}
 ! !
 
+CypressAbstractTest subclass: #CypressDefinitionTest
+	instanceVariableNames: ''
+	package: 'Cypress-Tests'!
+
 !CypressDefinitionTest methodsFor: 'testing'!
 
 testClassDefinition
@@ -201,6 +205,53 @@ testNameEquality
 	pkg := CypressPackage new name: name.
 	self assert: pkg name equals: name.
 	self deny: (pkg name = 'Nope.').
+!
+
+testPrintString
+	| name pkg |
+	name := 'Cypress-Mocks'.
+	pkg := CypressPackage new name: name.
+	self assert: 'a CypressPackage(', name, ')' equals: pkg printString.
+!
+
+testSnapshot
+	| name pkg packageDefinitions expectedDefinitions |
+	name := 'Cypress-Mocks'.
+	pkg := CypressPackage new name: name.
+	packageDefinitions := pkg snapshot definitions.
+	expectedDefinitions := self baseDefinitions.
+	self assert: (expectedDefinitions size = packageDefinitions size).
+	packageDefinitions do: [:def |
+		(expectedDefinitions includes: def)
+			ifFalse: [ 
+				def inspect.
+				self assert: false ]].
+!
+
+testSnapshotEquality
+	| name pkg packageDefinitions expectedDefinitions |
+	name := 'Cypress-Mocks'.
+	pkg := CypressPackage new name: name.
+	packageDefinitions := pkg snapshot definitions.
+	expectedDefinitions := self baseDefinitions.
+	self assert: packageDefinitions = expectedDefinitions
+! !
+
+CypressAbstractTest subclass: #CypressPatchTest
+	instanceVariableNames: ''
+	package: 'Cypress-Tests'!
+
+!CypressPatchTest methodsFor: 'testing'!
+
+testBasicPatch
+
+	| baseSnapshot targetSnapshot patch operations |
+	baseSnapshot := CypressSnapshot definitions: self baseDefinitions.
+	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
+	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
+	operations := patch operations.
+	self assert: operations size = 2.
+	self assert: operations = self baseTargetPatch
 !
 
 testPatch
@@ -253,35 +304,5 @@ testPatchOperationEquality
         			source:'extra
 	"extra method"').
 	self assert: addition = addition.
-!
-
-testPrintString
-	| name pkg |
-	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
-	self assert: 'a CypressPackage(', name, ')' equals: pkg printString.
-!
-
-testSnapshot
-	| name pkg packageDefinitions expectedDefinitions |
-	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
-	packageDefinitions := pkg snapshot definitions.
-	expectedDefinitions := self baseDefinitions.
-	self assert: (expectedDefinitions size = packageDefinitions size).
-	packageDefinitions do: [:def |
-		(expectedDefinitions includes: def)
-			ifFalse: [ 
-				def inspect.
-				self assert: false ]].
-!
-
-testSnapshotEquality
-	| name pkg packageDefinitions expectedDefinitions |
-	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
-	packageDefinitions := pkg snapshot definitions.
-	expectedDefinitions := self baseDefinitions.
-	self assert: packageDefinitions = expectedDefinitions
 ! !
 
