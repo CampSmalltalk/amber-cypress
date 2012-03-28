@@ -357,15 +357,60 @@ Object subclass: #CypressPatchOperation
 	instanceVariableNames: ''
 	package: 'Cypress-Definitions'!
 
+!CypressPatchOperation methodsFor: 'accessing'!
+
+description
+
+	self subclassResponsibility
+! !
+
+!CypressPatchOperation methodsFor: 'comparing'!
+
+= aPatchOperation
+	^aPatchOperation isKindOf: self class
+! !
+
 CypressPatchOperation subclass: #CypressAddition
 	instanceVariableNames: 'definition'
 	package: 'Cypress-Definitions'!
+
+!CypressAddition methodsFor: 'accessing'!
+
+definition
+
+	^definition
+!
+
+description
+
+	^'add: ', self definition description
+! !
+
+!CypressAddition methodsFor: 'comparing'!
+
+= aPatchOperation
+	^(super = aPatchOperation) and: [self definition = aPatchOperation definition]
+! !
 
 !CypressAddition methodsFor: 'initialization'!
 
 definition: aDefinition
 
 	definition := aDefinition
+! !
+
+!CypressAddition methodsFor: 'printing'!
+
+printString
+
+	| str |
+	str := StringStream on: String new.
+	str 
+		nextPutAll: super printString;
+		nextPutAll: ' (';
+		nextPutAll: self description;
+		nextPutAll: ')'.
+	^str contents
 ! !
 
 !CypressAddition class methodsFor: 'instance creation'!
@@ -378,12 +423,47 @@ CypressPatchOperation subclass: #CypressModification
 	instanceVariableNames: 'obsoletion modification'
 	package: 'Cypress-Definitions'!
 
+!CypressModification methodsFor: 'accessing'!
+
+description
+
+	^'modify from: ', self obsoletion description, ' to: ', self modification description
+!
+
+modification
+
+	^modification
+!
+
+obsoletion
+
+	^obsoletion
+! !
+
 !CypressModification methodsFor: 'initialization'!
+
+= aPatchOperation
+	^(super = aPatchOperation) and: [self obsoletion = aPatchOperation obsoletion and: [ self modification = aPatchOperation modification]]
+!
 
 base: base target: target
 
 	obsoletion := base.
 	modification := target.
+! !
+
+!CypressModification methodsFor: 'printing'!
+
+printString
+
+	| str |
+	str := StringStream on: String new.
+	str 
+		nextPutAll: super printString;
+		nextPutAll: ' (';
+		nextPutAll: self description;
+		nextPutAll: ')'.
+	^str contents
 ! !
 
 !CypressModification class methodsFor: 'instance creation'!
@@ -396,11 +476,43 @@ CypressPatchOperation subclass: #CypressRemoval
 	instanceVariableNames: 'definition'
 	package: 'Cypress-Definitions'!
 
+!CypressRemoval methodsFor: 'accessing'!
+
+definition
+
+	^definition
+!
+
+description
+
+	^'remove: ', self definition description
+! !
+
+!CypressRemoval methodsFor: 'comparing'!
+
+= aPatchOperation
+	^(super = aPatchOperation) and: [self definition = aPatchOperation definition]
+! !
+
 !CypressRemoval methodsFor: 'initialization'!
 
 definition: aDefinition
 
 	definition := aDefinition
+! !
+
+!CypressRemoval methodsFor: 'printing'!
+
+printString
+
+	| str |
+	str := StringStream on: String new.
+	str 
+		nextPutAll: super printString;
+		nextPutAll: ' (';
+		nextPutAll: self description;
+		nextPutAll: ')'.
+	^str contents
 ! !
 
 !CypressRemoval class methodsFor: 'instance creation'!
