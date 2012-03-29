@@ -302,6 +302,20 @@ Object subclass: #CypressDependencySorter
 
 !CypressDependencySorter methodsFor: 'accessing'!
 
+externalRequirements
+	| unloaded providedByUnloaded |
+	unloaded := self itemsWithMissingRequirements.
+	providedByUnloaded := (unloaded gather: [:e | e provisions]) asSet.
+	^ self required keys reject: [:globalName | providedByUnloaded includes: globalName ]
+!
+
+itemsWithMissingRequirements
+	| patchOperations |
+	patchOperations := Set new.
+	required values do: [:aSetOfPatchOperations | patchOperations addAll: aSetOfPatchOperations ].
+	^ patchOperations
+!
+
 orderedItems
 	"ordered list of patch operations"
 
@@ -340,9 +354,13 @@ addAll: aCollection
 
 !CypressDependencySorter methodsFor: 'private'!
 
+addExternalProvisions: aCollection
+	(aCollection intersection: self externalRequirements)
+		do: [:globalName | self addProvision: globalName]
+!
+
 addProvision: aGlobalName
 	| newlySatisfied |
-aGlobalName halt."looks like required is supposed to be a definition?"
 	self provided add: aGlobalName.
 	newlySatisfied := self required removeKey: aGlobalName ifAbsent: [#()].
 	self addAll: newlySatisfied.
@@ -898,6 +916,20 @@ difference: aCollection
 	"Answer the set theoretic difference of two collections."
 
 	^ self reject: [:each | aCollection includes: each]
+!
+
+gather: aBlock
+	"Answer a collection containing all the results of evaluating aBlock, collected together."
+
+	| array |
+	array := Array new.
+	self do: [:ea | array addAll: (aBlock value: ea)]
+!
+
+intersection: aCollection
+	"Answer the set theoretic intersection of two collections."
+
+	^ self select: [:each | aCollection includes: each]
 ! !
 
 !CharacterArray methodsFor: '*Cypress-Definitions'!
