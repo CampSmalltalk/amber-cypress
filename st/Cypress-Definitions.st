@@ -15,10 +15,16 @@ description
 	^(aDefinition isKindOf: CypressDefinition) and: [self isRevisionOf: aDefinition]
 ! !
 
-!CypressDefinition methodsFor: 'loading'!
+!CypressDefinition methodsFor: 'dependency'!
 
 provisions
 	"Answer list of global names defined by this definition"
+
+	^#()
+!
+
+requirements
+	"Answer list of global names required by this definition"
 
 	^#()
 ! !
@@ -85,6 +91,20 @@ superclassName
 		and: [comment = aDefinition comment]]]]]
 ! !
 
+!CypressClassDefinition methodsFor: 'dependency'!
+
+provisions
+	"Answer list of global names defined by this definition"
+
+	^{ self name }
+!
+
+requirements
+	"Answer list of global names required by this definition"
+
+	^{self name}
+! !
+
 !CypressClassDefinition methodsFor: 'initialization'!
 
 name: aClassName superclassName: aSuperclassName category: aCategory instVarNames: anInstanceVariableNames classInstVarNames: aClassInstanceVariableNames comment: aComment
@@ -95,14 +115,6 @@ name: aClassName superclassName: aSuperclassName category: aCategory instVarName
 	instVarNames := anInstanceVariableNames.
 	classInstVarNames := aClassInstanceVariableNames.
 	comment := aComment
-! !
-
-!CypressClassDefinition methodsFor: 'loading'!
-
-provisions
-	"Answer list of global names defined by this definition"
-
-	^{ self name }
 ! !
 
 !CypressClassDefinition methodsFor: 'printString'!
@@ -181,6 +193,14 @@ source
     ^ super = aDefinition
         and: [ aDefinition source = self source
                 and: [ aDefinition category = self category ] ]
+! !
+
+!CypressMethodDefinition methodsFor: 'dependency'!
+
+requirements
+	"Answer list of global names required by this definition"
+
+	^{self className}
 ! !
 
 !CypressMethodDefinition methodsFor: 'initialization'!
@@ -280,23 +300,76 @@ Object subclass: #CypressDependencySorter
 	instanceVariableNames: 'required provided orderedItems'
 	package: 'Cypress-Definitions'!
 
+!CypressDependencySorter methodsFor: 'accessing'!
+
+orderedItems
+	"ordered list of patch operations"
+
+	orderedItems ifNil: [ orderedItems := OrderedCollection new ].
+	^orderedItems
+!
+
+provided
+	"set of global names provided by definitions already loaded"
+
+	provided ifNil: [ provided := Set new ].
+	^provided
+!
+
+required
+	"dictionary of required global name mapped to list of definitions that require the global"
+
+	required ifNil: [ required := Dictionary new ].
+	^required
+! !
+
 !CypressDependencySorter methodsFor: 'building'!
 
-add: anItem
+add: aPatchOperation
 	| requirements |
-	requirements := self unresolvedRequirementsFor: anItem.
+	requirements := self unresolvedRequirementsFor: aPatchOperation.
 	requirements isEmpty
-		ifTrue: [self addToOrder: anItem]
-		ifFalse: [self addRequirements: requirements for: anItem].
-	^ anItem
+		ifTrue: [self addToOrder: aPatchOperation]
+		ifFalse: [self addRequirements: requirements for: aPatchOperation].
+	^ aPatchOperation
 !
 
 addAll: aCollection
-	aCollection do: [:ea | self add: ea]
+	aCollection do: [:aPatchOperation | self add: aPatchOperation ]
+! !
+
+!CypressDependencySorter methodsFor: 'private'!
+
+addProvision: aGlobalName
+	| newlySatisfied |
+aGlobalName halt."looks like required is supposed to be a definition?"
+	self provided add: aGlobalName.
+	newlySatisfied := self required removeKey: aGlobalName ifAbsent: [#()].
+	self addAll: newlySatisfied.
 !
 
-unresolvedRequirementsFor: aCypressPatchOperation
-	^ aCypressPatchOperation requirements difference: provided
+addRequirement: globalName for: aPatchOperation
+	(self itemsRequiring: globalName) add: aPatchOperation
+!
+
+addRequirements: aCollection for: aPatchOperation
+	aCollection do: [:globalName | self addRequirement: globalName for: aPatchOperation]
+!
+
+addToOrder: aPatchOperation
+	self orderedItems add: aPatchOperation.
+	aPatchOperation provisions do: [:globalName | self addProvision: globalName ].
+!
+
+itemsRequiring: globalName
+	^ self required at: globalName ifAbsentPut: [Set new]
+!
+
+unresolvedRequirementsFor: aPatchOperation
+	"Answer a list of global names that are required by <aPatchOperation>, but not 
+	 provided by patchOperations that have already been processed"
+
+	^ aPatchOperation requirements difference: self provided
 ! !
 
 Object subclass: #CypressLoader
@@ -531,6 +604,20 @@ applyTo: aCypressLoader
 	^aPatchOperation isKindOf: self class
 ! !
 
+!CypressPatchOperation methodsFor: 'dependency'!
+
+provisions
+	"Answer list of global names defined by this definition"
+
+	self subclassResponsibility
+!
+
+requirements
+	"Answer list of global names required by this definition"
+
+	self subclassResponsibility
+! !
+
 CypressPatchOperation subclass: #CypressAddition
 	instanceVariableNames: 'definition'
 	package: 'Cypress-Definitions'!
@@ -558,6 +645,20 @@ applyTo: aCypressLoader
 
 = aPatchOperation
 	^(super = aPatchOperation) and: [self definition = aPatchOperation definition]
+! !
+
+!CypressAddition methodsFor: 'dependency'!
+
+provisions
+	"Answer list of global names defined by this definition"
+
+	^self definition provisions
+!
+
+requirements
+	"Answer list of global names required by this definition"
+
+	^self definition requirements
 ! !
 
 !CypressAddition methodsFor: 'initialization'!
@@ -613,6 +714,20 @@ obsoletion
 applyTo: aCypressLoader
 
 	aCypressLoader applyModification: self
+! !
+
+!CypressModification methodsFor: 'dependency'!
+
+provisions
+	"Answer list of global names defined by this definition"
+
+	^self modification provisions
+!
+
+requirements
+	"Answer list of global names required by this definition"
+
+	^self modification requirements
 ! !
 
 !CypressModification methodsFor: 'initialization'!
@@ -674,6 +789,20 @@ applyTo: aCypressLoader
 
 = aPatchOperation
 	^(super = aPatchOperation) and: [self definition = aPatchOperation definition]
+! !
+
+!CypressRemoval methodsFor: 'dependency'!
+
+provisions
+	"Answer list of global names defined by this definition"
+
+	^#()
+!
+
+requirements
+	"Answer list of global names required by this definition"
+
+	^#()
 ! !
 
 !CypressRemoval methodsFor: 'initialization'!
@@ -761,6 +890,14 @@ asCypressClassDefinition
 		instVarNames: self instanceVariableNames
 		classInstVarNames: self class instanceVariableNames
 		comment: self comment
+! !
+
+!Collection methodsFor: '*Cypress-Definitions'!
+
+difference: aCollection
+	"Answer the set theoretic difference of two collections."
+
+	^ self reject: [:each | aCollection includes: each]
 ! !
 
 !CharacterArray methodsFor: '*Cypress-Definitions'!
