@@ -76,21 +76,21 @@ basePackageStructureJson
     "CypressMockBasic.class" : {
         "class" :  {
             "current.json" : { "category" : "accessing" },
-            "current.st" : "current ^current",
+            "current.st" : "current%0A%09^current",
             "current..json" : { "category" : "accessing" } ,
-            "current..st" : "current: anObject current := anObject",
+            "current..st" : "current: anObject%0A%09current := anObject",
             "initialize.json" : { "category" : "initialization"},
-            "initialize.st" : "initialize self current: self new"
+            "initialize.st" : "initialize%0A%09self current: self new"
         },
         "instance" : {
             "extra.json" : { "category" : "accessing" } ,
-            "extra.st" : "extra ",
+            "extra.st" : "extra%0A%09%22extra method%22",
             "initialize.json" : { "category" : "initialization" } ,
-            "initialize.st" : "initialize super initialize. self name: ''Unknown''",
+            "initialize.st" : "initialize%0A%09super initialize.%0A%09self name: ''Unknown''",
             "name.json" : { "category" : "accessing" } ,
-            "name.st" : "name ^name",
+            "name.st" : "name%0A%09^name",
             "name..json" : { "category" : "accessing" } ,
-            "name..st" : "name: aString name := aString"
+            "name..st" : "name: aString%0A%09name := aString"
         },
         "properties.json" : {
             "instvars" : [ "name" ],
