@@ -70,6 +70,46 @@ baseDefinitions
 	}
 !
 
+basePackageStructureJson
+
+	^'{ "Cypress-Mocks.package" :  {
+    "CypressMockBasic.class" : {
+        "class" :  {
+            "current.json" : { "category" : "accessing" },
+            "current.st" : "current
+        ^current",
+            "current..json" : { "category" : "accessing" } ,
+         "current..st" : "current: anObject
+        current := anObject",
+            "initialize.json" : { "category" : "initialization"},
+            "initialize.st" : "initialize
+        self current: self new"
+        },
+        "instance" : {
+            "extra.json" : { "category" : "accessing" } ,
+            "extra.st" : "extra
+        \\"extra method\\"",
+            "initialize.json" : { "category" : "initialization" } ,
+            "initialize.st" : "initialize
+        super initialize.
+        self name: ''Unknown''",
+            "name.json" : { "category" : "accessing" } ,
+            "name.st" : "name
+        ^name",
+            "name..json" : { "category" : "accessing" } ,
+            "name..st" : "name: aString
+        name := aString"
+        },
+        "properties.json" : {
+            "instvars" : [ "name" ],
+            "classinstvars" : [ "current" ],
+            "name" : "CypressMockBasic",
+            "super" : "Object" }
+        }
+    }
+}'
+!
+
 baseTargetPatch
 	| className classClassName |
 	className := 'CypressMockBasic'.
@@ -215,9 +255,9 @@ testDictionaryOfDefinitions
 testEquality
 	| pkg1 pkg2 pkg3 name |
 	name := 'Cypress-Mocks'.
-	pkg1 := CypressPackage new name: name.
-	pkg2 := CypressPackage new name: name.
-	pkg3 := CypressPackage new name: 'Nope!!'.
+	pkg1 := CypressPackageDefinition new name: name.
+	pkg2 := CypressPackageDefinition new name: name.
+	pkg3 := CypressPackageDefinition new name: 'Nope!!'.
 
 	self assert: pkg1 equals: pkg2.
 	self deny: pkg1 = pkg3
@@ -235,7 +275,7 @@ testMethodDefinition
 testNameEquality
 	| pkg name |
 	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
+	pkg := CypressPackageDefinition new name: name.
 	self assert: pkg name equals: name.
 	self deny: (pkg name = 'Nope.').
 !
@@ -243,8 +283,8 @@ testNameEquality
 testPrintString
 	| name pkg |
 	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
-	self assert: 'a CypressPackage(', name, ')' equals: pkg printString.
+	pkg := CypressPackageDefinition new name: name.
+	self assert: 'a CypressPackageDefinition(', name, ')' equals: pkg printString.
 ! !
 
 CypressAbstractTest subclass: #CypressLoaderTest
@@ -259,7 +299,7 @@ tearDown
 	super tearDown.
 	name := 'Cypress-Mocks'.
 	(CypressSnapshot definitions: self baseDefinitions)
-		 updatePackage: (CypressPackage new name: name)
+		 updatePackage: (CypressPackageDefinition new name: name)
 ! !
 
 !CypressLoaderTest methodsFor: 'testing'!
@@ -269,7 +309,7 @@ testLoad
 	| name |
 	name := 'Cypress-Mocks'.
 	(CypressSnapshot definitions: self targetDefinitions)
-		 updatePackage: (CypressPackage new name: name)
+		 updatePackage: (CypressPackageDefinition new name: name)
 ! !
 
 CypressAbstractTest subclass: #CypressPatchTest
@@ -350,7 +390,7 @@ CypressAbstractTest subclass: #CypressSnapshotTest
 testSnapshot
 	| name pkg packageDefinitions expectedDefinitions |
 	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
+	pkg := CypressPackageDefinition new name: name.
 	packageDefinitions := pkg snapshot definitions.
 	expectedDefinitions := self baseDefinitions.
 	self assert: (expectedDefinitions size = packageDefinitions size).
@@ -362,7 +402,7 @@ testSnapshot
 testSnapshotEquality
 	| name pkg packageDefinitions expectedDefinitions |
 	name := 'Cypress-Mocks'.
-	pkg := CypressPackage new name: name.
+	pkg := CypressPackageDefinition new name: name.
 	packageDefinitions := pkg snapshot definitions.
 	expectedDefinitions := self baseDefinitions.
 	self assert: packageDefinitions = expectedDefinitions

@@ -630,11 +630,11 @@ updatePackage: aPackage withSnapshot: aSnapshot
 		load
 ! !
 
-Object subclass: #CypressPackage
+Object subclass: #CypressPackageDefinition
 	instanceVariableNames: 'name'
 	package: 'Cypress-Definitions'!
 
-!CypressPackage methodsFor: 'accessing'!
+!CypressPackageDefinition methodsFor: 'accessing'!
 
 name
 	^ name
@@ -644,19 +644,19 @@ name: aString
 	name := aString
 ! !
 
-!CypressPackage methodsFor: 'comparing'!
+!CypressPackageDefinition methodsFor: 'comparing'!
 
 = other
 	^ other species = self species and: [other name sameAs: name]
 ! !
 
-!CypressPackage methodsFor: 'printing'!
+!CypressPackageDefinition methodsFor: 'printing'!
 
 printString
 	^super printString, '(', name, ')'
 ! !
 
-!CypressPackage methodsFor: 'snapshotting'!
+!CypressPackageDefinition methodsFor: 'snapshotting'!
 
 snapshot
 	| package definitions name map  |

@@ -1,9 +1,9 @@
-Smalltalk current createPackage: 'Cypress-DirectoryLayout' properties: #{}!
-Object subclass: #CypressDirectoryLayout
+Smalltalk current createPackage: 'Cypress-Structure' properties: #{}!
+Object subclass: #CypressPackageDirectory
 	instanceVariableNames: ''
-	package: 'Cypress-DirectoryLayout'!
+	package: 'Cypress-Structure'!
 
-!CypressDirectoryLayout class methodsFor: 'file access'!
+!CypressPackageDirectory class methodsFor: 'file access'!
 
 get: ajaxUrl onComplete: completeBlock onError: errorBlock
 	jQuery 
@@ -16,7 +16,7 @@ get: ajaxUrl onComplete: completeBlock onError: errorBlock
 		}
 ! !
 
-!CypressDirectoryLayout class methodsFor: 'instance creation'!
+!CypressPackageDirectory class methodsFor: 'instance creation'!
 
 root: path
 
