@@ -72,8 +72,10 @@ baseDefinitions
 
 basePackageStructureJson
 
-	^'{ "Cypress-Mocks.package" :  {
-    "CypressMockBasic.class" : {
+	^'{ 
+  "name" : "Cypress-Mocks.package",
+  "contents" : [
+      { "name" : "CypressMockBasic.class",
         "class" :  {
             "current.json" : { "category" : "accessing" },
             "current.st" : "current%0A%09^current",
@@ -99,7 +101,10 @@ basePackageStructureJson
             "super" : "Object"
         }
     }
-}}'
+    ],
+  "properties.json" : {
+  }
+}'
 !
 
 baseTargetPatch
@@ -409,5 +414,12 @@ CypressAbstractTest subclass: #CypressStructureTest
 testJson
 
 	(Compiler new eval: '(', self basePackageStructureJson, ')')
+!
+
+testPackageStructure
+
+	| jsObject |
+	jsObject := (Compiler new eval: '(', self basePackageStructureJson, ')').
+	(CypressPackageStructure fromJs: jsObject)
 ! !
 
