@@ -1,0 +1,31 @@
+{ "Cypress-Mocks" : [
+  { "CypressMockBasic.class" : [
+      { "class" : [
+        { "current.json" : { "category" : "accessing" } },
+        { "current.st" : "current
+	^current"},
+        { "current..json" : { "category" : "accessing" } },
+        { "current..st" : "current: anObject
+	current := anObject"},
+        { "initialize.json" : { "category" : "initialization"} },
+        { "initialize.st" : "initialize
+	self current: self new"},
+         ]},
+      { "instance" : [
+        { "added.json" : {} },
+        { "added.st" : ""},
+        { "initialize.json" : {} },
+        { "initialize.st" : ""},
+        { "name.json" : {} },
+        { "name.st" : ""},
+        { "name..json" : {} },
+        { "name..st" : ""},
+        ]},
+      { "properties.json" : { 
+          "instvars" : [ "name" ],
+          "classinstvars" : [ "current" ],
+          "name" : "CypressMockBasic",
+          "super" : "Object" } }
+    ] }
+  ]
+}
