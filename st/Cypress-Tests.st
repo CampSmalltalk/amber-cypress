@@ -76,38 +76,30 @@ basePackageStructureJson
     "CypressMockBasic.class" : {
         "class" :  {
             "current.json" : { "category" : "accessing" },
-            "current.st" : "current
-        ^current",
+            "current.st" : "current ^current",
             "current..json" : { "category" : "accessing" } ,
-         "current..st" : "current: anObject
-        current := anObject",
+            "current..st" : "current: anObject current := anObject",
             "initialize.json" : { "category" : "initialization"},
-            "initialize.st" : "initialize
-        self current: self new"
+            "initialize.st" : "initialize self current: self new"
         },
         "instance" : {
             "extra.json" : { "category" : "accessing" } ,
-            "extra.st" : "extra
-        \\"extra method\\"",
+            "extra.st" : "extra ",
             "initialize.json" : { "category" : "initialization" } ,
-            "initialize.st" : "initialize
-        super initialize.
-        self name: ''Unknown''",
+            "initialize.st" : "initialize super initialize. self name: ''Unknown''",
             "name.json" : { "category" : "accessing" } ,
-            "name.st" : "name
-        ^name",
+            "name.st" : "name ^name",
             "name..json" : { "category" : "accessing" } ,
-            "name..st" : "name: aString
-        name := aString"
+            "name..st" : "name: aString name := aString"
         },
         "properties.json" : {
             "instvars" : [ "name" ],
             "classinstvars" : [ "current" ],
             "name" : "CypressMockBasic",
-            "super" : "Object" }
+            "super" : "Object"
         }
     }
-}'
+}}'
 !
 
 baseTargetPatch
@@ -406,5 +398,16 @@ testSnapshotEquality
 	packageDefinitions := pkg snapshot definitions.
 	expectedDefinitions := self baseDefinitions.
 	self assert: packageDefinitions = expectedDefinitions
+! !
+
+CypressAbstractTest subclass: #CypressStructureTest
+	instanceVariableNames: ''
+	package: 'Cypress-Tests'!
+
+!CypressStructureTest methodsFor: 'not yet classified'!
+
+testJson
+
+	(Compiler new eval: '(', self basePackageStructureJson, ')')
 ! !
 
