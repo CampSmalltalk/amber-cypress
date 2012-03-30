@@ -251,6 +251,17 @@ CypressAbstractTest subclass: #CypressLoaderTest
 	instanceVariableNames: ''
 	package: 'Cypress-Tests'!
 
+!CypressLoaderTest methodsFor: 'running'!
+
+tearDown
+
+	| name |
+	super tearDown.
+	name := 'Cypress-Mocks'.
+	(CypressSnapshot definitions: self baseDefinitions)
+		 updatePackage: (CypressPackage new name: name)
+! !
+
 !CypressLoaderTest methodsFor: 'testing'!
 
 testLoad
@@ -345,9 +356,7 @@ testSnapshot
 	self assert: (expectedDefinitions size = packageDefinitions size).
 	packageDefinitions do: [:def |
 		(expectedDefinitions includes: def)
-			ifFalse: [ 
-				def inspect.
-				self assert: false ]].
+			ifFalse: [ self assert: false ]].
 !
 
 testSnapshotEquality

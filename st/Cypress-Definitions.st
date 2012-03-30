@@ -29,6 +29,35 @@ requirements
 	^#()
 ! !
 
+!CypressDefinition methodsFor: 'loading'!
+
+actualClass
+
+	self subclassResponsibility
+!
+
+loadClassDefinition
+	"default is to do nothing"
+!
+
+loadMethodDefinition
+	"default is to do nothing"
+!
+
+postLoad
+	"noop"
+!
+
+postLoadOver: aDefinition
+
+	self postLoad
+!
+
+unloadDefinition
+
+	self subclassResponsibility
+! !
+
 !CypressDefinition methodsFor: 'testing'!
 
 isRevisionOf: aDefinition
@@ -115,6 +144,37 @@ name: aClassName superclassName: aSuperclassName category: aCategory instVarName
 	instVarNames := anInstanceVariableNames.
 	classInstVarNames := aClassInstanceVariableNames.
 	comment := aComment
+! !
+
+!CypressClassDefinition methodsFor: 'loading'!
+
+actualClass
+
+	^Smalltalk current at: self name
+!
+
+createClass
+
+	| superClass |
+	superClass := Smalltalk current at: self superclassName.
+	^ClassBuilder new
+		superclass: superClass 
+		subclass: self name
+		instanceVariableNames: self instVarNames 
+		package: self category
+!
+
+loadClassDefinition
+
+	 | cls |
+	cls := self createClass.
+	cls class instanceVariableNames: self classInstanceVariablesString.
+	self comment notEmpty ifTrue: [ cls comment: self comment ]
+!
+
+unloadDefinition
+
+	Smalltalk current removeClass: self actualClass.
 ! !
 
 !CypressClassDefinition methodsFor: 'printString'!
@@ -214,6 +274,43 @@ className: aName classIsMeta: isMetaclass selector: aSelector category: aCategor
 	source := aSource.
 ! !
 
+!CypressMethodDefinition methodsFor: 'loading'!
+
+actualClass
+
+	| cls |
+	cls := self theNonMetaClass.
+	^self classIsMeta
+		ifTrue: [ cls class ]
+		ifFalse: [ cls  ].
+!
+
+loadMethodDefinition
+
+	self actualClass
+		compile: self source
+		category: self category
+!
+
+postLoadOver: aDefinition
+
+	super postLoadOver: aDefinition.
+	(self isInitializer
+		and: [ aDefinition isNil or: [ self source ~= aDefinition source ]]) 
+			ifTrue: [ self theNonMetaClass initialize ].
+!
+
+theNonMetaClass
+	^Smalltalk current at: self className
+!
+
+unloadDefinition
+
+	| cls |
+	cls := self actualClass.
+	cls removeCompiledMethod: (cls methodAt: self selector)
+! !
+
 !CypressMethodDefinition methodsFor: 'printing'!
 
 printString
@@ -231,6 +328,12 @@ printString
 		nextPutAll: self selector;
 		nextPutAll: ')'.
 	^str contents
+! !
+
+!CypressMethodDefinition methodsFor: 'testing'!
+
+isInitializer
+	^ self selector = 'initialize' and: [self classIsMeta]
 ! !
 
 !CypressMethodDefinition class methodsFor: 'instance creation'!
@@ -312,7 +415,7 @@ externalRequirements
 itemsWithMissingRequirements
 	| patchOperations |
 	patchOperations := Set new.
-	required values do: [:aSetOfPatchOperations | patchOperations addAll: aSetOfPatchOperations ].
+	self required values do: [:aSetOfPatchOperations | patchOperations addAll: aSetOfPatchOperations ].
 	^ patchOperations
 !
 
@@ -391,7 +494,7 @@ unresolvedRequirementsFor: aPatchOperation
 ! !
 
 Object subclass: #CypressLoader
-	instanceVariableNames: 'additions removals unloadable provisions errorDefinitions methodAdditions requirements'
+	instanceVariableNames: 'additions removals unloadable provisions errors methodAdditions requirements'
 	package: 'Cypress-Definitions'!
 
 !CypressLoader methodsFor: 'accessing'!
@@ -400,6 +503,16 @@ additions
 
 	additions ifNil: [ additions := OrderedCollection new ].
 	^additions
+!
+
+errors
+	errors ifNil: [ errors := OrderedCollection new ].
+	^errors
+!
+
+methodAdditions
+
+	^#()
 !
 
 provisions
@@ -470,8 +583,7 @@ basicLoad
 	self additions do: [:ea | self loadClassDefinition: ea ]. "load class definitions first"
 	self additions do: [:ea | self loadMethodDefinition: ea ] . "load method definitions now"
 	self removals do: [:ea | self unloadDefinition: ea ]. "now we can remove things"
-	self warnAboutErrors.
-	errorDefinitions do: [:ea | ea addMethodAdditionTo: methodAdditions]. "not sure about methodAddtions...yet"
+	self errors do: [:ea | ea addMethodAdditionTo: methodAdditions]. "not sure about methodAddtions...yet"
 	self methodAdditions do: [:ea | self loadMethodAddition: ea ]. "ditto"
 	self additions do: [:ea | self postLoad: ea ]. "this is where the obsoletion is taken into account ..."
 !
@@ -489,6 +601,25 @@ updatePackage: aPackage withSnapshot: aSnapshot
 	patch := aSnapshot patchRelativeToBase: snapshot.
 	patch applyTo: self.
 	snapshot definitions do: [:ea | self provisions addAll: ea provisions]
+! !
+
+!CypressLoader methodsFor: 'operations'!
+
+loadClassDefinition: aPatchOperation
+
+	[ aPatchOperation loadClassDefinition ] on: Error do: [ self errors add: aPatchOperation ].
+!
+
+loadMethodDefinition: aPatchOperation
+	[ aPatchOperation loadMethodDefinition ] on: Error do: [ self errors add: aPatchOperation ].
+!
+
+postLoad: aPatchOperation
+	aPatchOperation postLoadDefinition
+!
+
+unloadDefinition: aPatchOperation
+	[ aPatchOperation unloadDefinition ] on: Error do: [ self errors add: aPatchOperation ].
 ! !
 
 !CypressLoader class methodsFor: 'loading'!
@@ -636,6 +767,26 @@ requirements
 	self subclassResponsibility
 ! !
 
+!CypressPatchOperation methodsFor: 'loading'!
+
+loadClassDefinition
+
+	self subclassResponsibility
+!
+
+loadMethodDefinition
+	self subclassResponsibility
+!
+
+postLoadDefinition
+	self subclassResponsibility
+!
+
+unloadDefinition
+
+	self error: 'inappropriate to send #unloadDefinition to an addition or modification operation'
+! !
+
 CypressPatchOperation subclass: #CypressAddition
 	instanceVariableNames: 'definition'
 	package: 'Cypress-Definitions'!
@@ -684,6 +835,21 @@ requirements
 definition: aDefinition
 
 	definition := aDefinition
+! !
+
+!CypressAddition methodsFor: 'loading'!
+
+loadClassDefinition
+
+	self definition loadClassDefinition
+!
+
+loadMethodDefinition
+	self definition loadMethodDefinition
+!
+
+postLoadDefinition
+	self definition postLoadOver: nil
 ! !
 
 !CypressAddition methodsFor: 'printing'!
@@ -760,6 +926,21 @@ base: base target: target
 	modification := target.
 ! !
 
+!CypressModification methodsFor: 'loading'!
+
+loadClassDefinition
+
+	self modification loadClassDefinition
+!
+
+loadMethodDefinition
+	self modification loadMethodDefinition
+!
+
+postLoadDefinition
+	self modification postLoadOver: self obsoletion
+! !
+
 !CypressModification methodsFor: 'printing'!
 
 printString
@@ -828,6 +1009,28 @@ requirements
 definition: aDefinition
 
 	definition := aDefinition
+! !
+
+!CypressRemoval methodsFor: 'loading'!
+
+loadClassDefinition
+	
+	self error: 'inappropriate to send #loadClassDefinition to a removal operation'
+!
+
+loadMethodDefinition
+	
+	self error: 'inappropriate to send #loadMethodDefinition to a removal operation'
+!
+
+postLoadDefinition
+	
+	self error: 'inappropriate to send #postLoadDefinition to a removal operation'
+!
+
+unloadDefinition
+
+	self definition unloadDefinition
 ! !
 
 !CypressRemoval methodsFor: 'printing'!
