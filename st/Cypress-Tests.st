@@ -452,6 +452,23 @@ sampleJson
 
 !CypressStructureTest methodsFor: 'tests'!
 
+testClassStructure
+
+	| jsObject packageStructure classStructure classProperties |
+	jsObject := self compileJSON: self basePackageStructureJson.
+	packageStructure := CypressPackageStructure fromJs: jsObject.
+	classStructure := packageStructure classes first.
+	self assert: classStructure name = 'CypressMockBasic.class'.
+	classProperties := classStructure properties.
+	self assert: classProperties size = 4.
+	self assert: (classProperties at: 'instvars') = #('name').
+	self assert: (classProperties at: 'classinstvars') = #('current').
+	self assert: (classProperties at: 'name') = 'CypressMockBasic'.
+	self assert: (classProperties at: 'super') = 'Object'.
+	self assert: classStructure instanceMethods size = 4.
+	self assert: classStructure classMethods size = 3.
+!
+
 testJson
 	"Let's compile the JSON without errors"
 
@@ -460,10 +477,13 @@ testJson
 
 testPackageStructure
 
-	| jsObject package |
-	jsObject := (self compileJSON: self basePackageStructureJson) asCypressPropertyObject.
-	package := CypressPackageStructure fromJs: jsObject.
-	self assert: package name = 'Cypress-Mocks.package'.
+	| jsObject packageStructure classStructure classProperties |
+	jsObject := self compileJSON: self basePackageStructureJson.
+	packageStructure := CypressPackageStructure fromJs: jsObject.
+	self assert: packageStructure name = 'Cypress-Mocks.package'.
+	self assert: packageStructure properties isEmpty.
+	self assert: packageStructure extensions isEmpty.
+	self assert: packageStructure classes size = 1.
 !
 
 testPropertyDictionary

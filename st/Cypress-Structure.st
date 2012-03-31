@@ -33,7 +33,7 @@ fromJs: jsObject
 fromJs: jsObject
 
 	^(self new) 
-		fromJs: jsObject;
+		fromJs: jsObject asCypressPropertyObject;
 		yourself
 ! !
 
