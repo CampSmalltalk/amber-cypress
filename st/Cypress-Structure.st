@@ -56,6 +56,10 @@ category
 	^self packageStructure packageName
 !
 
+classInstanceVariableNames
+	^self properties at: 'classinstvars' ifAbsent: ['']
+!
+
 classMethods
 
 	classMethods ifNil: [ classMethods := Dictionary new ].
@@ -72,6 +76,11 @@ instanceMethods
 
 	instanceMethods ifNil: [ instanceMethods := Dictionary new ].
 	^instanceMethods
+!
+
+instanceVariableNames
+
+	^self properties at: 'instvars' ifAbsent: ['']
 !
 
 isClassStructure
@@ -109,12 +118,15 @@ fromJs: jsObject
 	(jsObject at: 'class' ifAbsent: [#()]) do: [:jsMethodObject |  | methodNameParts |
 		methodNameParts := self splitMethodNameFor: jsMethodObject.
 		(self classMethodNamed: (methodNameParts at: 1)) 
-			packageStructure: self;
+			packageStructure: self packageStructure;
+			classStructure: self;
+			isMetaclass: true;
 			fromJs: jsMethodObject named: methodNameParts ].
 	(jsObject at: 'instance' ifAbsent: [#()]) do: [:jsMethodObject |  | methodNameParts |
 		methodNameParts := self splitMethodNameFor: jsMethodObject.
 		(self instanceMethodNamed: (methodNameParts at: 1)) 
-			packageStructure: self;
+			packageStructure: self packageStructure;
+			classStructure: self;
 			fromJs: jsMethodObject named: methodNameParts ].	
 	comment := jsObject at: 'README' ifAbsent: [''].
 	properties := jsObject at: 'properties.json'
@@ -152,14 +164,55 @@ instanceMethodNamed: methodName
 ! !
 
 CypressStructure subclass: #CypressMethodStructure
-	instanceVariableNames: 'source'
+	instanceVariableNames: 'source isMetaclass classStructure'
 	package: 'Cypress-Structure'!
 
 !CypressMethodStructure methodsFor: 'accessing'!
 
+category
+
+	^self properties at: 'category'
+!
+
+classStructure
+	^classStructure
+!
+
+classStructure: aCypressClassStructure
+	classStructure := aCypressClassStructure
+!
+
+isMetaclass
+
+	isMetaclass ifNil: [ isMetaclass := false ].
+	^isMetaclass
+!
+
+isMetaclass: aBoolean
+	isMetaclass := aBoolean
+!
+
+selector
+
+	^String
+		streamContents: [:stream | self name do: [:chara | stream nextPutAll: (chara = '.' ifTrue:  [ ':' ] ifFalse: [ chara ])]]
+!
+
 source
 
 	^source
+! !
+
+!CypressMethodStructure methodsFor: 'converting'!
+
+asCypressMethodDefinition
+
+	^CypressMethodDefinition 
+        	className: self classStructure name
+		classIsMeta: self isMetaclass
+		selector: self selector
+		category: self category
+		source: self source
 ! !
 
 !CypressMethodStructure methodsFor: 'initialization'!
@@ -190,9 +243,14 @@ extensions
 	^extensions
 !
 
+packageExtension
+
+	^self properties at: 'extension' ifAbsent: ['.package' ]
+!
+
 packageName
 
-	^self name copyFrom: 1 to: (self name size - '.package' size)
+	^self name copyFrom: 1 to: (self name size - self packageExtension size)
 !
 
 packageStructure
@@ -222,14 +280,14 @@ snapshot
 	definitions := OrderedCollection new.
 	self classes do: [:classStructure |
         	definitions add: classStructure asCypressClassDefinition.
-                (classStructure instanceMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+                (classStructure instanceMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
 			definitions add: methodStructure asCypressMethodDefinition ].
-                (classStructure classMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+                (classStructure classMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
 			definitions add: methodStructure asCypressMethodDefinition ]].
 	self extensions do: [:classStructure |
-                (classStructure instanceMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+                (classStructure instanceMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
 			definitions add: methodStructure asCypressMethodDefinition ].
-                (classStructure classMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+                (classStructure classMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
 			definitions add: methodStructure asCypressMethodDefinition ]].
 	^ CypressSnapshot definitions: definitions
 ! !
