@@ -461,7 +461,7 @@ testJson
 testPackageStructure
 
 	| jsObject package |
-	jsObject := self compileJSON: self basePackageStructureJson.
+	jsObject := (self compileJSON: self basePackageStructureJson) asCypressPropertyObject.
 	package := CypressPackageStructure fromJs: jsObject.
 	self assert: package name = 'Cypress-Mocks.package'.
 !
