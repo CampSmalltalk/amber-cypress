@@ -469,7 +469,7 @@ testPackageStructure
 testPropertyDictionary
 
 	| propertyDictionary phoneNumbers |
-	propertyDictionary := self compileJSON: self sampleJson.
+	propertyDictionary := (self compileJSON: self sampleJson) asCypressPropertyObject.
 	self assert: (propertyDictionary at: 'name') = 'John Smith'.
 	self assert: (propertyDictionary at: 'age') = 25.
 	self assert: (propertyDictionary at: 'registered').
