@@ -481,6 +481,7 @@ testPackageStructure
 	jsObject := self compileJSON: self basePackageStructureJson.
 	packageStructure := CypressPackageStructure fromJs: jsObject.
 	self assert: packageStructure name = 'Cypress-Mocks.package'.
+	self assert: packageStructure packageName = 'Cypress-Mocks'.
 	self assert: packageStructure properties isEmpty.
 	self assert: packageStructure extensions isEmpty.
 	self assert: packageStructure classes size = 1.

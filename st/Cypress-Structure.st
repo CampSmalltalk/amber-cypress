@@ -1,6 +1,6 @@
 Smalltalk current createPackage: 'Cypress-Structure' properties: #{}!
 Object subclass: #CypressStructure
-	instanceVariableNames: 'name properties'
+	instanceVariableNames: 'name properties packageStructure'
 	package: 'Cypress-Structure'!
 
 !CypressStructure methodsFor: 'accessing'!
@@ -13,6 +13,14 @@ name
 name: aString 
 
 	name := aString
+!
+
+packageStructure
+	^packageStructure
+!
+
+packageStructure: aCypressPackageStructure
+	packageStructure := aCypressPackageStructure
 !
 
 properties
@@ -43,6 +51,11 @@ CypressStructure subclass: #CypressClassStructure
 
 !CypressClassStructure methodsFor: 'accessing'!
 
+category
+
+	^self packageStructure packageName
+!
+
 classMethods
 
 	classMethods ifNil: [ classMethods := Dictionary new ].
@@ -69,6 +82,23 @@ isClassStructure
 isExtensionStructure
 
 	^self name match: '.extension$'
+!
+
+superclassName
+
+	^self properties at: 'super'
+! !
+
+!CypressClassStructure methodsFor: 'converting'!
+
+asCypressClassDefinition
+	^CypressClassDefinition
+		name: self name
+		superclassName: self superclassName
+		category: self category 
+		instVarNames: self instanceVariableNames
+		classInstVarNames: self classInstanceVariableNames
+		comment: self comment
 ! !
 
 !CypressClassStructure methodsFor: 'initialization'!
@@ -78,10 +108,14 @@ fromJs: jsObject
 	name := jsObject at: 'name'.
 	(jsObject at: 'class' ifAbsent: [#()]) do: [:jsMethodObject |  | methodNameParts |
 		methodNameParts := self splitMethodNameFor: jsMethodObject.
-		(self classMethodNamed: (methodNameParts at: 1)) fromJs: jsMethodObject named: methodNameParts ].
+		(self classMethodNamed: (methodNameParts at: 1)) 
+			packageStructure: self;
+			fromJs: jsMethodObject named: methodNameParts ].
 	(jsObject at: 'instance' ifAbsent: [#()]) do: [:jsMethodObject |  | methodNameParts |
 		methodNameParts := self splitMethodNameFor: jsMethodObject.
-		(self instanceMethodNamed: (methodNameParts at: 1)) fromJs: jsMethodObject named: methodNameParts ].	
+		(self instanceMethodNamed: (methodNameParts at: 1)) 
+			packageStructure: self;
+			fromJs: jsMethodObject named: methodNameParts ].	
 	comment := jsObject at: 'README' ifAbsent: [''].
 	properties := jsObject at: 'properties.json'
 ! !
@@ -154,6 +188,15 @@ extensions
 
 	extensions ifNil: [ extensions := OrderedCollection new ].
 	^extensions
+!
+
+packageName
+
+	^self name copyFrom: 1 to: (self name size - '.package' size)
+!
+
+packageStructure
+	^self
 ! !
 
 !CypressPackageStructure methodsFor: 'initialization'!
@@ -163,6 +206,7 @@ fromJs: jsObject
 	name := jsObject at: 'name'.
 	(jsObject at: 'contents') do: [:jsClassObject| | classStructure |
 		classStructure := CypressClassStructure fromJs: jsClassObject.
+		classStructure packageStructure: self.
                 classStructure isExtensionStructure
 			ifTrue: [ self extensions add: classStructure ]
 			ifFalse: [ 

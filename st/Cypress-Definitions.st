@@ -120,6 +120,13 @@ superclassName
 		and: [comment = aDefinition comment]]]]]
 ! !
 
+!CypressClassDefinition methodsFor: 'converting'!
+
+asCypressClassDefinition
+
+	^self
+! !
+
 !CypressClassDefinition methodsFor: 'dependency'!
 
 provisions
@@ -253,6 +260,13 @@ source
     ^ super = aDefinition
         and: [ aDefinition source = self source
                 and: [ aDefinition category = self category ] ]
+! !
+
+!CypressMethodDefinition methodsFor: 'converting'!
+
+asCypressMethodDefinition
+
+	^self
 ! !
 
 !CypressMethodDefinition methodsFor: 'dependency'!
