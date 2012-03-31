@@ -72,28 +72,42 @@ baseDefinitions
 
 basePackageStructureJson
 
-	^'{ 
+	^'{
   "name" : "Cypress-Mocks.package",
   "contents" : [
       { "name" : "CypressMockBasic.class",
-        "class" :  {
-            "current.json" : { "category" : "accessing" },
-            "current.st" : "current%0A%09^current",
-            "current..json" : { "category" : "accessing" } ,
-            "current..st" : "current: anObject%0A%09current := anObject",
-            "initialize.json" : { "category" : "initialization"},
-            "initialize.st" : "initialize%0A%09self current: self new"
-        },
-        "instance" : {
-            "extra.json" : { "category" : "accessing" } ,
-            "extra.st" : "extra%0A%09%22extra method%22",
-            "initialize.json" : { "category" : "initialization" } ,
-            "initialize.st" : "initialize%0A%09super initialize.%0A%09self name: ''Unknown''",
-            "name.json" : { "category" : "accessing" } ,
-            "name.st" : "name%0A%09^name",
-            "name..json" : { "category" : "accessing" } ,
-            "name..st" : "name: aString%0A%09name := aString"
-        },
+        "class" :  [
+            { "name" : "current.json", 
+              "contents" : { "category" : "accessing" }},
+            { "name" : "current.st", 
+              "contents" : "current%0A%09^current" },
+            { "name" : "current..json", 
+              "contents" : { "category" : "accessing" }} ,
+            { "name" : "current..st", 
+              "contents" : "current: anObject%0A%09current := anObject"},
+            { "name" : "initialize.json", 
+              "contents" : { "category" : "initialization"}},
+            { "name" : "initialize.st", 
+              "contents" : "initialize%0A%09self current: self new"}
+        ],
+        "instance" : [
+            { "name" : "extra.json", 
+              "contents" : { "category" : "accessing" } },
+            { "name" : "extra.st", 
+              "contents" : "extra%0A%09%22extra method%22"},
+            { "name" : "initialize.json", 
+              "contents" : { "category" : "initialization" } },
+            { "name" : "initialize.st", 
+              "contents" : "initialize%0A%09super initialize.%0A%09self name: ''Unknown''" },
+            { "name" : "name.json", 
+              "contents" : { "category" : "accessing" } } ,
+            { "name" : "name.st", 
+              "contents" : "name%0A%09^name" },
+            { "name" : "name..json", 
+              "contents" : { "category" : "accessing" } } ,
+            { "name" : "name..st", 
+              "contents" : "name: aString%0A%09name := aString" }
+        ],
         "properties.json" : {
             "instvars" : [ "name" ],
             "classinstvars" : [ "current" ],
