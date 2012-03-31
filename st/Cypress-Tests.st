@@ -486,6 +486,13 @@ testPackageStructure
 	self assert: packageStructure classes size = 1.
 !
 
+testPackageStructureSnapshot
+
+	| packageStructure packageDefinitions |
+	packageStructure := CypressPackageStructure fromJs: (self compileJSON: self basePackageStructureJson).
+	packageDefinitions := packageStructure snapshot definitions.
+!
+
 testPropertyDictionary
 
 	| propertyDictionary phoneNumbers |

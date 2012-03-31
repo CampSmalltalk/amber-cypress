@@ -171,6 +171,25 @@ fromJs: jsObject
 	properties := jsObject at: 'properties.json'
 ! !
 
+!CypressPackageStructure methodsFor: 'snapshotting'!
+
+snapshot
+	| definitions map  |
+	definitions := OrderedCollection new.
+	self classes do: [:classStructure |
+        	definitions add: classStructure asCypressClassDefinition.
+                (classStructure instanceMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ].
+                (classStructure classMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ]].
+	self extensions do: [:classStructure |
+                (classStructure instanceMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ].
+                (classStructure classMethods sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ]].
+	^ CypressSnapshot definitions: definitions
+! !
+
 !Object methodsFor: '*Cypress-Structure'!
 
 asCypressPropertyObject
