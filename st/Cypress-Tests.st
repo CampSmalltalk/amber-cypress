@@ -434,6 +434,6 @@ testPackageStructure
 
 	| jsObject |
 	jsObject := (Compiler new eval: '(', self basePackageStructureJson, ')').
-	(CypressPackageStructure fromJs: jsObject)
+	(CypressPackageStructure fromJs: jsObject) inspect
 ! !
 
