@@ -423,17 +423,59 @@ CypressAbstractTest subclass: #CypressStructureTest
 	instanceVariableNames: ''
 	package: 'Cypress-Tests'!
 
-!CypressStructureTest methodsFor: 'not yet classified'!
+!CypressStructureTest methodsFor: 'private'!
+
+compileJSON: aJsonString
+
+	^(Compiler new eval: '(', aJsonString , ')')
+!
+
+sampleJson
+
+	^'{
+     "name": "John Smith",
+     "age"      : 25,
+     "registered" : true,
+    "phoneNumber":
+     [
+         {
+           "type"  : "home",
+           "number": "212 555-1234"
+         },
+         {
+           "type"  : "fax",
+           "number": "646 555-4567"
+         }
+     ]
+ }'
+! !
+
+!CypressStructureTest methodsFor: 'tests'!
 
 testJson
+	"Let's compile the JSON without errors"
 
-	(Compiler new eval: '(', self basePackageStructureJson, ')')
+	self compileJSON: self basePackageStructureJson
 !
 
 testPackageStructure
 
-	| jsObject |
-	jsObject := (Compiler new eval: '(', self basePackageStructureJson, ')').
-	(CypressPackageStructure fromJs: jsObject) inspect
+	| jsObject package |
+	jsObject := self compileJSON: self basePackageStructureJson.
+	package := CypressPackageStructure fromJs: jsObject.
+	self assert: package name = 'Cypress-Mocks.package'.
+!
+
+testPropertyDictionary
+
+	| propertyDictionary phoneNumbers |
+	propertyDictionary := self compileJSON: self sampleJson.
+	self assert: (propertyDictionary at: 'name') = 'John Smith'.
+	self assert: (propertyDictionary at: 'age') = 25.
+	self assert: (propertyDictionary at: 'registered').
+	phoneNumbers := propertyDictionary at: 'phoneNumber'.
+	self assert: phoneNumbers size = 2.
+	self assert: ((phoneNumbers at: 1) at: 'number') = '212 555-1234'.
+	self assert: ((phoneNumbers at: 2) at: 'number') = '646 555-4567'.
 ! !
 

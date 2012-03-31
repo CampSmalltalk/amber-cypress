@@ -83,7 +83,7 @@ fromJs: jsObject
 		methodNameParts := self splitMethodNameFor: jsMethodObject.
 		(self instanceMethodNamed: (methodNameParts at: 1)) fromJs: jsMethodObject named: methodNameParts ].	
 	comment := jsObject at: 'README'.
-	properties := jsObject at: 'properties.json'
+	properties := (jsObject at: 'properties.json') asCypressPropertyObject
 ! !
 
 !CypressClassStructure methodsFor: 'private'!
@@ -134,7 +134,7 @@ fromJs: jsObject  named: methodNameParts
 
 	| ext |
 	(ext := methodNameParts at: 2) = '.json'
-		ifTrue: [  properties := jsObject at: 'contents' ]
+		ifTrue: [  properties := (jsObject at: 'contents') asCypressPropertyObject ]
 		ifFalse: [ ext = '.st' ifTrue: [ source := (jsObject at: 'contents') unescaped ] ]
 ! !
 
@@ -168,6 +168,28 @@ fromJs: jsObject
 			ifFalse: [ 
 				classStructure isClassStructure
 					ifTrue: [ self classes add: classStructure ]]].
-	properties := jsObject at: 'properties.json'
+	properties := (jsObject at: 'properties.json') asCypressPropertyObject
+! !
+
+!Object methodsFor: '*Cypress-Structure'!
+
+asCypressPropertyObject
+
+	^self
+! !
+
+!JSObjectProxy methodsFor: '*Cypress-Structure'!
+
+asCypressPropertyObject
+	| properties |
+	properties := Dictionary new.
+	<for(var i in self['@jsObject']) {
+		properties._at_put_(i, self['@jsObject'][i]);
+	}>.
+	properties associations do: [:assoc |
+		properties 
+			at: assoc key 
+			put: assoc value asCypressPropertyObject ].
+	^properties
 ! !
 
