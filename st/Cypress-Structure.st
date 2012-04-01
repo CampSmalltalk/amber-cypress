@@ -336,7 +336,13 @@ fromPackage: aCypressPackageDefinition
 							add: methodDefinition. ]].
 	classDefinitions do: [:classDefinition | | classStructure |
 		classStructure := (CypressClassStructure fromClassDefinition: classDefinition)
-			packageStructure: self ].
+			packageStructure: self.
+		(classMap removeKey: classDefinition className ifAbsent: [#()]) do: [:methodDefinition |
+			(methodDefinition
+				instanceMethod: [:instanceMethod | classStructure instanceMethods ] 
+				classMethod: [:classMethod | classStructure classMethods ])
+					at: methodDefinition selector
+					put: (CypressMethodStructure fromMethodDefinition: methodDefinition) ]].
 ! !
 
 !CypressPackageStructure methodsFor: 'snapshotting'!

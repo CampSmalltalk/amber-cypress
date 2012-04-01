@@ -373,6 +373,13 @@ isInitializer
 classDefinition: classBlock methodDefinition: methodBlock
 
 	methodBlock value: self
+!
+
+instanceMethod: instanceBlock classMethod: classBlock
+
+	^(self classIsMeta
+		ifTrue: [ classBlock ]
+		ifFalse: [ instanceBlock ]) value: self
 ! !
 
 !CypressMethodDefinition class methodsFor: 'instance creation'!
