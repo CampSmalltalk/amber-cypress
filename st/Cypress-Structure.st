@@ -60,6 +60,10 @@ classInstanceVariableNames
 	^self properties at: 'classinstvars' ifAbsent: ['']
 !
 
+classInstanceVariableNames: aString
+	^self properties at: 'classinstvars' put: aString
+!
+
 classMethods
 
 	classMethods ifNil: [ classMethods := Dictionary new ].
@@ -77,6 +81,11 @@ comment
 	^comment
 !
 
+comment: aString
+
+	comment := aString
+!
+
 instanceMethods
 
 	instanceMethods ifNil: [ instanceMethods := Dictionary new ].
@@ -86,6 +95,11 @@ instanceMethods
 instanceVariableNames
 
 	^self properties at: 'instvars' ifAbsent: ['']
+!
+
+instanceVariableNames: aString
+
+	^self properties at: 'instvars' put: aString
 !
 
 isClassStructure
@@ -101,6 +115,11 @@ isExtensionStructure
 superclassName
 
 	^self properties at: 'super'
+!
+
+superclassName: aString
+
+	^self properties at: 'super' put: aString
 ! !
 
 !CypressClassStructure methodsFor: 'converting'!
@@ -116,6 +135,15 @@ asCypressClassDefinition
 ! !
 
 !CypressClassStructure methodsFor: 'initialization'!
+
+fromClassDefinition: classDefinition
+
+	self name: classDefinition name.
+	self comment: classDefinition comment.
+  	self superclassName: classDefinition superclassName.
+	self instanceVariableNames: classDefinition instVarNames.
+	self classInstanceVariableNames: classDefinition classInstVarNames.
+!
 
 fromJs: jsObject
 
@@ -166,6 +194,15 @@ instanceMethodNamed: methodName
 	^self instanceMethods 
 		at: methodName 
 		ifAbsent: [ self instanceMethods at: methodName put: (CypressMethodStructure new name: methodName) ]
+! !
+
+!CypressClassStructure class methodsFor: 'instance creation'!
+
+fromClassDefinition: classDefinition
+
+	^self new
+		fromClassDefinition: classDefinition;
+		yourself
 ! !
 
 CypressStructure subclass: #CypressMethodStructure
@@ -279,6 +316,27 @@ fromJs: jsObject
 				classStructure isClassStructure
 					ifTrue: [ self classes add: classStructure ]]].
 	properties := jsObject at: 'properties.json'
+!
+
+fromPackage: aCypressPackageDefinition
+
+	| snapshot classMap classDefinitions |
+	snapshot := aCypressPackageDefinition snapshot.
+	name := aCypressPackageDefinition name.
+	properties := Dictionary new.
+	classDefinitions := Set new.
+	classMap := Dictionary new.
+	snapshot definitions do: [:definition |  
+			definition 
+				classDefinition: [:classDefinition |  classDefinitions add: classDefinition ] 
+				methodDefinition: [:methodDefinition | 
+					(classMap 
+						at: methodDefinition className 
+						ifAbsent: [classMap at: methodDefinition className put: Set new]) 
+							add: methodDefinition. ]].
+	classDefinitions do: [:classDefinition | | classStructure |
+		classStructure := (CypressClassStructure fromClassDefinition: classDefinition)
+			packageStructure: self ].
 ! !
 
 !CypressPackageStructure methodsFor: 'snapshotting'!
@@ -298,6 +356,15 @@ snapshot
                 (classStructure classMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
 			definitions add: methodStructure asCypressMethodDefinition ]].
 	^ CypressSnapshot definitions: definitions
+! !
+
+!CypressPackageStructure class methodsFor: 'instance creation'!
+
+fromPackage: aCypressPackageDefinition
+
+	^(self new) 
+		fromPackage: aCypressPackageDefinition;
+		yourself
 ! !
 
 !Object methodsFor: '*Cypress-Structure'!

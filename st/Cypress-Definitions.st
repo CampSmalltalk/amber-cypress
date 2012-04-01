@@ -68,6 +68,12 @@ isSameRevisionAs: aDefinition
 	^ self = aDefinition
 ! !
 
+!CypressDefinition methodsFor: 'visiting'!
+
+classDefinition: classBlock methodDefinition: methodBlock
+	"default is noop"
+! !
+
 CypressDefinition subclass: #CypressClassDefinition
 	instanceVariableNames: 'name superclassName category comment instVarNames classInstVarNames'
 	package: 'Cypress-Definitions'!
@@ -82,6 +88,11 @@ category
 classInstVarNames
 
 	^classInstVarNames
+!
+
+className
+
+	^self name
 !
 
 comment
@@ -196,6 +207,13 @@ printString
 		nextPutAll: self name;
 		nextPutAll: ')'.
 	^str contents
+! !
+
+!CypressClassDefinition methodsFor: 'visiting'!
+
+classDefinition: classBlock methodDefinition: methodBlock
+
+	classBlock value: self
 ! !
 
 !CypressClassDefinition class methodsFor: 'instance creation'!
@@ -348,6 +366,13 @@ printString
 
 isInitializer
 	^ self selector = 'initialize' and: [self classIsMeta]
+! !
+
+!CypressMethodDefinition methodsFor: 'visiting'!
+
+classDefinition: classBlock methodDefinition: methodBlock
+
+	methodBlock value: self
 ! !
 
 !CypressMethodDefinition class methodsFor: 'instance creation'!
@@ -1087,6 +1112,14 @@ definitions: aDefinitions
 
 = other
 	^ definitions asArray = other definitions asArray
+! !
+
+!CypressSnapshot methodsFor: 'enumerating'!
+
+classDefinitions: classBlock methodDefinitions: methodBlock
+
+	self definitions do: [:definition |
+		definition classDefinition: classBlock methodDefinition: methodBlock]
 ! !
 
 !CypressSnapshot methodsFor: 'loading'!
