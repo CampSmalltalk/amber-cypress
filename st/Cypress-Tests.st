@@ -108,6 +108,7 @@ basePackageStructureJson
             { "name" : "name..st", 
               "contents" : "name: aString%0A%09name := aString" }
         ],
+	"README" : "This mock contains basic class and instance method selectors",
         "properties.json" : {
             "instvars" : [ "name" ],
             "classinstvars" : [ "current" ],
@@ -459,6 +460,7 @@ testClassStructure
 	packageStructure := CypressPackageStructure fromJs: jsObject.
 	classStructure := packageStructure classes first.
 	self assert: classStructure name = 'CypressMockBasic.class'.
+	self assert: classStructure comment = 'This mock contains basic class and instance method selectors'.
 	classProperties := classStructure properties.
 	self assert: classProperties size = 4.
 	self assert: (classProperties at: 'instvars') = #('name').
@@ -489,9 +491,16 @@ testPackageStructure
 
 testPackageStructureSnapshot
 
-	| packageStructure packageDefinitions |
+	| packageStructure packageDefinitions expectedDefinitions |
 	packageStructure := CypressPackageStructure fromJs: (self compileJSON: self basePackageStructureJson).
 	packageDefinitions := packageStructure snapshot definitions.
+	expectedDefinitions := self baseDefinitions.
+	self assert: (expectedDefinitions size = packageDefinitions size).
+	packageDefinitions do: [:def |
+		(expectedDefinitions includes: def)
+			ifFalse: [ 
+				def inspect.
+				self assert: false ]].
 !
 
 testPropertyDictionary

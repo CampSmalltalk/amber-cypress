@@ -66,6 +66,11 @@ classMethods
 	^classMethods
 !
 
+className
+
+	^self name copyFrom: 1 to: (self name size - '.class' size)
+!
+
 comment
 
 	comment ifNil: [ comment := '' ].
@@ -102,7 +107,7 @@ superclassName
 
 asCypressClassDefinition
 	^CypressClassDefinition
-		name: self name
+		name: self className
 		superclassName: self superclassName
 		category: self category 
 		instVarNames: self instanceVariableNames
@@ -207,8 +212,11 @@ source
 
 asCypressMethodDefinition
 
+	| clsName |
+	clsName := self classStructure className.
+	self isMetaclass ifTrue: [ clsName := clsName, ' class' ].
 	^CypressMethodDefinition 
-        	className: self classStructure name
+        	className: clsName
 		classIsMeta: self isMetaclass
 		selector: self selector
 		category: self category
