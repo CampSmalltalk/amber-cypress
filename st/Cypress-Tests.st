@@ -88,7 +88,10 @@ basePackageStructureJson
               "contents" : { "category" : "*Cypress-Mocks" } },
             { "name" : "isCypressMockBasic.st", 
               "contents" : "isCypressMockBasic%0A%09^false"},
-	]
+	],
+        "properties.json" : {
+            "name" : "Object",
+        }
 	},
       { "name" : "CypressMockBasic.class",
         "class" :  [
@@ -482,7 +485,8 @@ testClassStructure
 	jsObject := self compileJSON: self basePackageStructureJson.
 	packageStructure := CypressPackageStructure fromJs: jsObject.
 	classStructure := packageStructure classes first.
-	self assert: classStructure name = 'CypressMockBasic.class'.
+	self assert: classStructure name = 'CypressMockBasic'.
+	self deny: classStructure isClassExtension.
 	self assert: classStructure comment = 'This mock contains basic class and instance method selectors'.
 	classProperties := classStructure properties.
 	self assert: classProperties size = 4.
@@ -492,6 +496,15 @@ testClassStructure
 	self assert: (classProperties at: 'super') = 'Object'.
 	self assert: classStructure instanceMethods size = 4.
 	self assert: classStructure classMethods size = 3.
+	classStructure := packageStructure extensions first.
+	self assert: classStructure name = 'Object'.
+	self assert: classStructure isClassExtension.
+	self assert: classStructure comment = ''.
+	classProperties := classStructure properties.
+	self assert: classProperties size = 1.
+	self assert: (classProperties at: 'name') = 'Object'.
+	self assert: classStructure instanceMethods size = 1.
+	self assert: classStructure classMethods size = 0.
 !
 
 testJson

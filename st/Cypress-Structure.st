@@ -84,7 +84,7 @@ classMethods
 
 className
 
-	^self name copyFrom: 1 to: (self name size - '.class' size)
+	^self name
 !
 
 comment
@@ -116,8 +116,8 @@ instanceVariableNames: aString
 
 isClassExtension
 
-	isClassExtension ifNil: [ isClassExtension := true ].
-	^isClassExtension
+        isClassExtension ifNil: [ isClassExtension := true ].
+        ^isClassExtension
 !
 
 isClassExtension: aBoolean
@@ -125,14 +125,14 @@ isClassExtension: aBoolean
 	isClassExtension := aBoolean
 !
 
-isClassStructure
+name
 
-	^self name match: '.class$'
+	^self properties at: 'name'
 !
 
-isExtensionStructure
+name: aString
 
-	^self name match: '.extension$'
+	self properties at: 'name' put: aString
 !
 
 superclassName
@@ -148,6 +148,7 @@ superclassName: aString
 !CypressClassStructure methodsFor: 'converting'!
 
 asCypressClassDefinition
+	self isClassExtension ifTrue: [ ^nil ].
 	^CypressClassDefinition
 		name: self className
 		superclassName: self superclassName
@@ -161,7 +162,8 @@ asCypressClassDefinition
 
 fromClassDefinition: classDefinition
 
-	self name: classDefinition name, '.class'.
+	self isClassExtension: false.
+	self name: classDefinition name.
 	self comment: classDefinition comment.
   	self superclassName: classDefinition superclassName.
 	self instanceVariableNames: classDefinition instVarNames.
@@ -170,7 +172,7 @@ fromClassDefinition: classDefinition
 
 fromJs: jsObject
 
-	name := jsObject at: 'name'.
+	properties := jsObject at: 'properties.json'.
 	(jsObject at: 'class' ifAbsent: [#()]) do: [:jsMethodObject |  | methodNameParts |
 		methodNameParts := self splitMethodNameFor: jsMethodObject.
 		(self classMethodNamed: (methodNameParts at: 1)) 
@@ -184,8 +186,7 @@ fromJs: jsObject
 			packageStructure: self packageStructure;
 			classStructure: self;
 			fromJs: jsMethodObject named: methodNameParts ].	
-	comment := jsObject at: 'README' ifAbsent: [''].
-	properties := jsObject at: 'properties.json'
+	comment := jsObject at: 'README' ifAbsent: ['']
 ! !
 
 !CypressClassStructure methodsFor: 'private'!
@@ -363,14 +364,20 @@ packageStructure
 fromJs: jsObject
 
 	name := jsObject at: 'name'.
-	(jsObject at: 'contents') do: [:jsClassObject| | classStructure |
-		classStructure := CypressClassStructure fromJs: jsClassObject.
-		classStructure packageStructure: self.
-                classStructure isExtensionStructure
-			ifTrue: [ self extensions add: classStructure ]
-			ifFalse: [ 
-				classStructure isClassStructure
-					ifTrue: [ self classes add: classStructure ]]].
+	(jsObject at: 'contents') do: [:jsClassObject| | classStructure objectName |
+		classStructure := (CypressClassStructure new)
+                		packageStructure: self;
+				yourself.
+                ((objectName := jsClassObject at: 'name') match: '.extension$')
+			ifTrue: [ 
+				classStructure isClassExtension: true.
+				self extensions add: classStructure ]
+			ifFalse: [
+				(objectName match: '.class$')
+					ifTrue: [ 
+						classStructure isClassExtension: false.
+						self classes add: classStructure ]].
+		classStructure fromJs: jsClassObject].
 	properties := jsObject at: 'properties.json'
 !
 
