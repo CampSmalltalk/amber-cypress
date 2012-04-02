@@ -44,3 +44,9 @@ initialize
 	self current: self new
 ! !
 
+!Object methodsFor: '*Cypress-Mocks'!
+
+isCypressMockBasic
+        ^false
+! !
+

@@ -66,7 +66,14 @@ baseDefinitions
         		selector: 'initialize'
         		category: 'initialization'
         		source:'initialize
-	self current: self new')
+	self current: self new').
+   	 	(CypressMethodDefinition
+          		className: 'Object'
+        		classIsMeta: false
+        		selector: 'isCypressMockBasic'
+        		category: '*Cypress-Mocks'
+        		source:'isCypressMockBasic
+        ^false')
 	}
 !
 
@@ -75,6 +82,14 @@ basePackageStructureJson
 	^'{
   "name" : "Cypress-Mocks.package",
   "contents" : [
+      { "name" : "Object.extension",
+        "instance" : [
+            { "name" : "isCypressMockBasic.json", 
+              "contents" : { "category" : "*Cypress-Mocks" } },
+            { "name" : "isCypressMockBasic.st", 
+              "contents" : "isCypressMockBasic%0A%09^false"},
+	]
+	},
       { "name" : "CypressMockBasic.class",
         "class" :  [
             { "name" : "current.json", 
@@ -158,7 +173,15 @@ baseTargetPatch
         			selector: 'extra'
         			category: 'accessing'
         			source:'extra
-	"extra method"'))
+	"extra method"')).
+		(CypressRemoval 
+			of: (CypressMethodDefinition
+          			className: 'Object'
+        			classIsMeta: false
+        			selector: 'isCypressMockBasic'
+        			category: '*Cypress-Mocks'
+        			source:'isCypressMockBasic
+        ^false'))
 	}
 !
 
@@ -348,7 +371,7 @@ testPatch
 	targetSnapshot := CypressSnapshot definitions: self targetDefinitions.
 	patch := CypressPatch fromBase: baseSnapshot toTarget: targetSnapshot.
 	operations := patch operations.
-	self assert: operations size = 3.
+	self assert: operations size = 4.
 	self assert: operations = self baseTargetPatch
 !
 
@@ -499,6 +522,7 @@ testPackageStructureFromPackage
 	packageDefinitions do: [:def |
 		(expectedDefinitions includes: def)
 			ifFalse: [ 
+				def inspect.
 				self assert: false ]].
 !
 
@@ -512,6 +536,7 @@ testPackageStructureSnapshot
 	packageDefinitions do: [:def |
 		(expectedDefinitions includes: def)
 			ifFalse: [ 
+				def inspect.
 				self assert: false ]].
 !
 

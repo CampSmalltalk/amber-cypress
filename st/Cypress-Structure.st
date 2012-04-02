@@ -58,7 +58,7 @@ fromJs: jsObject
 ! !
 
 CypressStructure subclass: #CypressClassStructure
-	instanceVariableNames: 'instanceMethods classMethods comment'
+	instanceVariableNames: 'instanceMethods classMethods comment isClassExtension'
 	package: 'Cypress-Structure'!
 
 !CypressClassStructure methodsFor: 'accessing'!
@@ -112,6 +112,17 @@ instanceVariableNames
 instanceVariableNames: aString
 
 	^self properties at: 'instvars' put: aString
+!
+
+isClassExtension
+
+	isClassExtension ifNil: [ isClassExtension := true ].
+	^isClassExtension
+!
+
+isClassExtension: aBoolean
+
+	isClassExtension := aBoolean
 !
 
 isClassStructure
@@ -393,7 +404,7 @@ fromPackage: aCypressPackageDefinition
 					put: methodStructure ].
 		self classes add: classStructure ].
 	classMap keysAndValuesDo: [:className :methods |
-		classStructure := (CypressClassStructure new name: className)
+		classStructure := (CypressClassStructure new name: className, '.extension')
 			packageStructure: self.
 		methods do: [:methodDefinition | | methodStructure |
 			methodStructure := (CypressMethodStructure fromMethodDefinition: methodDefinition)
