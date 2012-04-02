@@ -477,7 +477,7 @@ testJson
 	self compileJSON: self basePackageStructureJson
 !
 
-testPackageStructure
+testPackageStructureFromJson
 
 	| jsObject packageStructure classStructure classProperties |
 	jsObject := self compileJSON: self basePackageStructureJson.
@@ -513,6 +513,16 @@ testPackageStructureSnapshot
 		(expectedDefinitions includes: def)
 			ifFalse: [ 
 				self assert: false ]].
+!
+
+testPackageStructureToJson
+
+	| packageStructure stream json |
+	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
+	stream := StringStream on: String new.
+	packageStructure writeJsonOn: stream.
+	json := stream contents inspect.
+	self assert: self basePackageStructureJson = json
 !
 
 testPropertyDictionary

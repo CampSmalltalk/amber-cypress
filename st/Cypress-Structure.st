@@ -36,6 +36,18 @@ fromJs: jsObject
 	self subclassResponsibility
 ! !
 
+!CypressStructure methodsFor: 'printing'!
+
+writeJsonOn: aStream
+
+	self writeJsonOn: aStream indent: 0.
+!
+
+writeJsonOn: aStream  indent: indent
+
+	self subclassResponsibility
+! !
+
 !CypressStructure class methodsFor: 'instance creation'!
 
 fromJs: jsObject
@@ -395,6 +407,46 @@ fromPackage: aCypressPackageDefinition
 		self extensions add: classStructure ].
 ! !
 
+!CypressPackageStructure methodsFor: 'printing'!
+
+writeJsonOn: aStream  indent: startIndent
+
+	| indent |
+	indent := startIndent.
+	aStream 
+		tab: indent;
+		nextPutAll: '{'.
+	indent := indent + 1.
+	aStream
+		tab: indent;
+		nextPutAll: '"name"';
+		nextPutAll: ' : ';
+		nextPutAll: '"', self name, '",';
+		cr;
+		tab: indent;
+		nextPutAll: '"contents" : [';
+		cr;
+		yourself.
+	self classes.
+	self extensions.
+	aStream
+		tab: indent;
+		nextPutAll: '],';
+		cr;
+		tab: indent;
+		nextPutAll: '"properties" : {';
+		cr;
+		yourself.
+	aStream
+		tab: indent;
+		nextPutAll: '}';
+		cr.
+	indent := indent - 1.
+	aStream
+		tab: indent;
+		nextPutAll: ' }'
+! !
+
 !CypressPackageStructure methodsFor: 'snapshotting'!
 
 snapshot
@@ -464,5 +516,15 @@ asCypressPropertyObject
 			at: assoc key 
 			put: assoc value asCypressPropertyObject ].
 	^properties
+! !
+
+!StringStream methodsFor: '*Cypress-Structure'!
+
+tab
+	self nextPut: '	'
+!
+
+tab: count
+	count timesRepeat: [ self tab ]
 ! !
 
