@@ -355,7 +355,7 @@ fromPackage: aCypressPackageDefinition
 
 	| snapshot classMap classDefinitions |
 	snapshot := aCypressPackageDefinition snapshot.
-	name := aCypressPackageDefinition name.
+	name := aCypressPackageDefinition name, '.package'.
 	properties := Dictionary new.
 	classDefinitions := Set new.
 	classMap := Dictionary new.
