@@ -138,7 +138,7 @@ asCypressClassDefinition
 
 fromClassDefinition: classDefinition
 
-	self name: classDefinition name.
+	self name: classDefinition name, '.class'.
 	self comment: classDefinition comment.
   	self superclassName: classDefinition superclassName.
 	self instanceVariableNames: classDefinition instVarNames.
@@ -216,6 +216,11 @@ category
 	^self properties at: 'category'
 !
 
+category: aString
+
+	self properties at: 'category' put: aString
+!
+
 classStructure
 	^classStructure
 !
@@ -240,9 +245,20 @@ selector
 		streamContents: [:stream | self name do: [:chara | stream nextPutAll: (chara = '.' ifTrue:  [ ':' ] ifFalse: [ chara ])]]
 !
 
+selector: aString
+
+	name := String
+		streamContents: [:stream | aString do: [:chara | stream nextPutAll: (chara = ':' ifTrue:  [ '.' ] ifFalse: [ chara ])]]
+!
+
 source
 
 	^source
+!
+
+source: aString
+
+	source := aString
 ! !
 
 !CypressMethodStructure methodsFor: 'converting'!
@@ -268,6 +284,23 @@ fromJs: jsObject  named: methodNameParts
 	(ext := methodNameParts at: 2) = '.json'
 		ifTrue: [  properties := jsObject at: 'contents' ]
 		ifFalse: [ ext = '.st' ifTrue: [ source := jsObject at: 'contents' ] ]
+!
+
+fromMethodDefinition: methodDefinition
+
+	self isMetaclass: methodDefinition classIsMeta.
+	self selector: methodDefinition selector.
+	self category: methodDefinition category.
+	self source: methodDefinition source.
+! !
+
+!CypressMethodStructure class methodsFor: 'instance creation'!
+
+fromMethodDefinition: methodDefinition
+
+	^self new
+		fromMethodDefinition: methodDefinition;
+		yourself
 ! !
 
 CypressStructure subclass: #CypressPackageStructure
@@ -337,12 +370,29 @@ fromPackage: aCypressPackageDefinition
 	classDefinitions do: [:classDefinition | | classStructure |
 		classStructure := (CypressClassStructure fromClassDefinition: classDefinition)
 			packageStructure: self.
-		(classMap removeKey: classDefinition className ifAbsent: [#()]) do: [:methodDefinition |
+		(classMap removeKey: classDefinition className ifAbsent: [#()]) do: [:methodDefinition | | methodStructure |
+			methodStructure := (CypressMethodStructure fromMethodDefinition: methodDefinition)
+				packageStructure: self;
+				classStructure: classStructure.
 			(methodDefinition
 				instanceMethod: [:instanceMethod | classStructure instanceMethods ] 
 				classMethod: [:classMethod | classStructure classMethods ])
 					at: methodDefinition selector
-					put: (CypressMethodStructure fromMethodDefinition: methodDefinition) ]].
+					put: methodStructure ].
+		self classes add: classStructure ].
+	classMap keysAndValuesDo: [:className :methods |
+		classStructure := (CypressClassStructure new name: className)
+			packageStructure: self.
+		methods do: [:methodDefinition | | methodStructure |
+			methodStructure := (CypressMethodStructure fromMethodDefinition: methodDefinition)
+				packageStructure: self;
+				classStructure: classStructure.
+			(methodDefinition
+				instanceMethod: [:instanceMethod | classStructure instanceMethods ] 
+				classMethod: [:classMethod | classStructure classMethods ])
+					at: methodDefinition selector
+					put: methodStructure ].
+		self extensions add: classStructure ].
 ! !
 
 !CypressPackageStructure methodsFor: 'snapshotting'!

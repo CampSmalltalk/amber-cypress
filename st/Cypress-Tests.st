@@ -499,7 +499,6 @@ testPackageStructureFromPackage
 	packageDefinitions do: [:def |
 		(expectedDefinitions includes: def)
 			ifFalse: [ 
-				def inspect.
 				self assert: false ]].
 !
 
@@ -513,7 +512,6 @@ testPackageStructureSnapshot
 	packageDefinitions do: [:def |
 		(expectedDefinitions includes: def)
 			ifFalse: [ 
-				def inspect.
 				self assert: false ]].
 !
 
