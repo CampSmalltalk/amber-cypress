@@ -203,35 +203,35 @@ writeJsonOn: aStream  indent: startIndent
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
 		nextPutAll: '"', self name, '",';
-		cr.
+		lf.
 	indent := indent + 1.
 	aStream
 		tab: indent;
 		nextPutAll: '"instances" : [';
-		cr;
+		lf;
 		yourself.
 	aStream
 		tab: indent;
 		nextPutAll: '],';
-		cr;
+		lf;
 		yourself.
 	aStream
 		tab: indent;
 		nextPutAll: '"classes" : [';
-		cr;
+		lf;
 		yourself.
 	aStream
 		tab: indent;
 		nextPutAll: '],';
-		cr;
+		lf;
 		tab: indent;
 		nextPutAll: '"properties" : {';
-		cr;
+		lf;
 		yourself.
 	aStream
 		tab: indent;
 		nextPutAll: '}';
-		cr.
+		lf.
 	indent := indent - 1.
 	aStream
 		tab: indent;
@@ -487,32 +487,32 @@ writeJsonOn: aStream  indent: startIndent
 		nextPutAll: '"', self name, '",'.
 	indent := indent + 1.
 	aStream
-		cr;
+		lf;
 		tab: indent;
 		nextPutAll: '"contents" : [';
-		cr;
+		lf;
 		yourself.
 	1 to: self classes size do: [:index | | classStructure | 
 		classStructure := self classes at: index.
 		classStructure writeJsonOn: aStream indent: indent + 1.
-		(self extensions size > 0 or: [ index < self classes size]) ifTrue: [ aStream nextPutAll: ','; cr. ]].
+		(self extensions size > 0 or: [ index < self classes size]) ifTrue: [ aStream nextPutAll: ','; lf. ]].
 	1 to: self extensions size do: [:index | | classStructure | 
 		classStructure := self extensions at: index.
 		classStructure writeJsonOn: aStream indent: indent + 1.
-		index < self extensions size ifTrue: [ aStream nextPutAll: ','; cr.] ].
+		index < self extensions size ifTrue: [ aStream nextPutAll: ','; lf.] ].
 	aStream
-		cr;
+		lf;
 		tab: indent;
 		nextPutAll: '],';
-		cr;
+		lf;
 		tab: indent;
 		nextPutAll: '"properties" : {';
-		cr;
+		lf;
 		yourself.
 	aStream
 		tab: indent;
 		nextPutAll: '}';
-		cr.
+		lf.
 	indent := indent - 1.
 	aStream
 		tab: indent;
@@ -554,11 +554,33 @@ asCypressPropertyObject
 	^self
 ! !
 
-!Array methodsFor: '*Cypress-Structure'!
+!Boolean methodsFor: '*Cypress-Structure'!
 
-asCypressPropertyObject
+writeCypressJsonOn: aStream  indent: startIndent
 
-	^self collect: [:each | each asCypressPropertyObject ]
+	aStream 
+		nextPutAll: self printString
+! !
+
+!Dictionary methodsFor: '*Cypress-Structure'!
+
+writeCypressJsonOn: aStream  indent: startIndent
+	| indent count |
+	indent := startIndent.
+	aStream 
+		nextPutAll: '{'.
+	count := 0.
+	indent := indent + 1.
+	self keysAndValuesDo: [:key :value |
+		count := count+ 1.
+		count = 1
+			ifTrue: [ aStream tab: 1 ]
+			ifFalse: [ aStream tab: indent ].
+		key writeCypressJsonOn: aStream indent: indent.
+		aStream nextPutAll: ' : '.
+		value writeCypressJsonOn: aStream indent: indent.
+		count < self size ifTrue: [ aStream nextPutAll: ','; lf ] ].
+	aStream nextPutAll: ' }'
 ! !
 
 !Array methodsFor: '*Cypress-Structure'!
@@ -566,6 +588,41 @@ asCypressPropertyObject
 asCypressPropertyObject
 
 	^self collect: [:each | each asCypressPropertyObject ]
+!
+
+writeCypressJsonOn: aStream  indent: indent
+
+	aStream 
+		nextPutAll: '[';
+		lf.
+	indent := indent + 1.
+	1 to: self size do: [:index | | item | 
+		item := self at: index.
+		aStream tab: indent.
+		item writeCypressJsonOn: aStream  indent: indent.
+		index < self size ifTrue: [ aStream nextPutAll: ','; lf ]].
+	aStream nextPutAll: ' ]'
+! !
+
+!Array methodsFor: '*Cypress-Structure'!
+
+asCypressPropertyObject
+
+	^self collect: [:each | each asCypressPropertyObject ]
+!
+
+writeCypressJsonOn: aStream  indent: indent
+
+	aStream 
+		nextPutAll: '[';
+		lf.
+	indent := indent + 1.
+	1 to: self size do: [:index | | item | 
+		item := self at: index.
+		aStream tab: indent.
+		item writeCypressJsonOn: aStream  indent: indent.
+		index < self size ifTrue: [ aStream nextPutAll: ','; lf ]].
+	aStream nextPutAll: ' ]'
 ! !
 
 !String methodsFor: '*Cypress-Structure'!
@@ -573,6 +630,14 @@ asCypressPropertyObject
 asCypressPropertyObject
 
 	^self unescaped
+!
+
+writeCypressJsonOn: aStream  indent: startIndent
+
+	aStream 
+		nextPutAll: '"';
+		nextPutAll: self escaped;
+		nextPutAll: '"'
 ! !
 
 !JSObjectProxy methodsFor: '*Cypress-Structure'!
@@ -588,6 +653,14 @@ asCypressPropertyObject
 			at: assoc key 
 			put: assoc value asCypressPropertyObject ].
 	^properties
+! !
+
+!Number methodsFor: '*Cypress-Structure'!
+
+writeCypressJsonOn: aStream  indent: startIndent
+
+	aStream 
+		nextPutAll: self printString
 ! !
 
 !StringStream methodsFor: '*Cypress-Structure'!

@@ -186,6 +186,18 @@ baseTargetPatch
 	}
 !
 
+sampleJson
+
+	^'{	"name" : "John%20Smith",
+	"age" : 25,
+	"registered" : true,
+	"phoneNumber" : [
+		{	"type" : "home",
+			"number" : "212%20555-1234" },
+		{	"type" : "fax",
+			"number" : "646%20555-4567" } ] }'
+!
+
 targetDefinitions
 	"remove #extra method and modify #name: method"
 
@@ -452,26 +464,6 @@ CypressAbstractTest subclass: #CypressStructureTest
 compileJSON: aJsonString
 
 	^(Compiler new eval: '(', aJsonString , ')')
-!
-
-sampleJson
-
-	^'{
-     "name": "John Smith",
-     "age"      : 25,
-     "registered" : true,
-    "phoneNumber":
-     [
-         {
-           "type"  : "home",
-           "number": "212 555-1234"
-         },
-         {
-           "type"  : "fax",
-           "number": "646 555-4567"
-         }
-     ]
- }'
 ! !
 
 !CypressStructureTest methodsFor: 'tests'!
@@ -560,7 +552,7 @@ testPackageStructureToJson
 	self assert: self basePackageStructureJson = json
 !
 
-testPropertyDictionary
+testPropertyDictionaryRead
 
 	| propertyDictionary phoneNumbers |
 	propertyDictionary := (self compileJSON: self sampleJson) asCypressPropertyObject.
@@ -571,5 +563,14 @@ testPropertyDictionary
 	self assert: phoneNumbers size = 2.
 	self assert: ((phoneNumbers at: 1) at: 'number') = '212 555-1234'.
 	self assert: ((phoneNumbers at: 2) at: 'number') = '646 555-4567'.
+!
+
+testPropertyDictionaryWrite
+
+	| propertyDictionary stream |
+	propertyDictionary := (self compileJSON: self sampleJson) asCypressPropertyObject.
+	stream := StringStream on: String new.
+	propertyDictionary writeCypressJsonOn: stream indent: 0.
+	self assert: stream contents = self sampleJson
 ! !
 
