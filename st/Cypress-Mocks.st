@@ -47,6 +47,6 @@ initialize
 !Object methodsFor: '*Cypress-Mocks'!
 
 isCypressMockBasic
-        ^false
+	^false
 ! !
 

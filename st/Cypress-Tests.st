@@ -6,9 +6,8 @@ TestCase subclass: #CypressAbstractTest
 !CypressAbstractTest methodsFor: 'private'!
 
 baseDefinitions
-	| className classClassName |
+	| className |
 	className := 'CypressMockBasic'.
-	classClassName := 'CypressMockBasic class'.
 	^{
 		(CypressClassDefinition
         		name: className
@@ -47,21 +46,21 @@ baseDefinitions
         		source:'name: aString
 	name := aString').
    	 	(CypressMethodDefinition
-          		className: classClassName
+          		className: className
         		classIsMeta: true
         		selector: 'current'
         		category: 'accessing'
         		source:'current
 	^current').
    	 	(CypressMethodDefinition
-          		className: classClassName
+          		className: className
         		classIsMeta: true
         		selector: 'current:'
         		category: 'accessing'
         		source:'current: anObject
 	current := anObject').
    	 	(CypressMethodDefinition
-          		className: classClassName
+          		className: className
         		classIsMeta: true
         		selector: 'initialize'
         		category: 'initialization'
@@ -73,7 +72,7 @@ baseDefinitions
         		selector: 'isCypressMockBasic'
         		category: '*Cypress-Mocks'
         		source:'isCypressMockBasic
-        ^false')
+	^false')
 	}
 !
 
@@ -141,9 +140,8 @@ basePackageStructureJson
 !
 
 baseTargetPatch
-	| className classClassName |
+	| className |
 	className := 'CypressMockBasic'.
-	classClassName := 'CypressMockBasic class'.
 	^{
 		(CypressAddition 
 			of: (CypressMethodDefinition
@@ -184,16 +182,15 @@ baseTargetPatch
         			selector: 'isCypressMockBasic'
         			category: '*Cypress-Mocks'
         			source:'isCypressMockBasic
-        ^false'))
+	^false'))
 	}
 !
 
 targetDefinitions
 	"remove #extra method and modify #name: method"
 
-	| className classClassName |
+	| className |
 	className := 'CypressMockBasic'.
-	classClassName := 'CypressMockBasic class'.
 	^{
 		(CypressClassDefinition
         		name: className
@@ -233,21 +230,21 @@ targetDefinitions
 	"changed method"
 	name := aString').
    	 	(CypressMethodDefinition
-          		className: classClassName
+          		className: className
         		classIsMeta: true
         		selector: 'current'
         		category: 'accessing'
         		source:'current
 	^current').
    	 	(CypressMethodDefinition
-          		className: classClassName
+          		className: className
         		classIsMeta: true
         		selector: 'current:'
         		category: 'accessing'
         		source:'current: anObject
 	current := anObject').
    	 	(CypressMethodDefinition
-          		className: classClassName
+          		className: className
         		classIsMeta: true
         		selector: 'initialize'
         		category: 'initialization'
@@ -521,7 +518,7 @@ testPackageStructureFromJson
 	self assert: packageStructure name = 'Cypress-Mocks.package'.
 	self assert: packageStructure packageName = 'Cypress-Mocks'.
 	self assert: packageStructure properties isEmpty.
-	self assert: packageStructure extensions isEmpty.
+	self assert: packageStructure extensions size = 1.
 	self assert: packageStructure classes size = 1.
 !
 

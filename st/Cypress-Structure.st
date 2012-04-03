@@ -289,11 +289,8 @@ source: aString
 
 asCypressMethodDefinition
 
-	| clsName |
-	clsName := self classStructure className.
-	self isMetaclass ifTrue: [ clsName := clsName, ' class' ].
 	^CypressMethodDefinition 
-        	className: clsName
+        	className: self classStructure className
 		classIsMeta: self isMetaclass
 		selector: self selector
 		category: self category
@@ -411,7 +408,7 @@ fromPackage: aCypressPackageDefinition
 					put: methodStructure ].
 		self classes add: classStructure ].
 	classMap keysAndValuesDo: [:className :methods |
-		classStructure := (CypressClassStructure new name: className, '.extension')
+		classStructure := (CypressClassStructure new name: className)
 			packageStructure: self.
 		methods do: [:methodDefinition | | methodStructure |
 			methodStructure := (CypressMethodStructure fromMethodDefinition: methodDefinition)
