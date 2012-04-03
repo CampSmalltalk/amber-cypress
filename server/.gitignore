@@ -3,4 +3,5 @@ Cypress-Definitions.js
 Cypress-Structure.js
 FileServer.js
 PackageServer.js
+Compiler.js
 

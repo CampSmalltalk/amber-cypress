@@ -31,22 +31,25 @@ handlePOSTRequest: aRequest respondTo: aResponse
 handlePackagePOSTRequest: aRequest respondTo: aResponse
         | stream path |
         path := (url parse: aRequest url) pathname.
-console log: path.
 	path := path copyFrom: '/PACKAGE' size + 1 to: path size.
-console log: path.
         stream := fs createWriteStream: '.', path.
 
         aRequest setEncoding: 'utf8'.
-        aRequest on: 'data' do: [:data | stream write: data].
+        aRequest on: 'data' do: [:data | self writePackagStructureOn: stream fromJson: data ].
 
         aRequest on: 'end' do: [
                 stream end.
                 self respondOKTo: aResponse]
 ! !
 
-!PackageServer class methodsFor: 'accessing'!
+!PackageServer methodsFor: 'private'!
 
-port
-        ^port ifNil: [4000]
+writePackagStructureOn: stream fromJson: json
+
+	| packageStructure |
+	packageStructure := CypressPackageStructure fromJson: json.
+	stream write: 'hello world'
 ! !
+
+
 

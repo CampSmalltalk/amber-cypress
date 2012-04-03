@@ -457,7 +457,7 @@ testPackageServerPackagePOST
 	stream := StringStream on: String new.
 	packageStructure writeJsonOn: stream.
 	json := stream contents.
-	url := 'PACKAGE/tests/scratch/POST-Cypress-Mocks.json'.
+	url := 'PACKAGE/tests/scratch/PackagePOST-Cypress-Mocks.json'.
 	jQuery 
 		ajax: url
 		options: #{	
