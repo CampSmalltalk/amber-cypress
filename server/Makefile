@@ -5,4 +5,4 @@ run: pserver.js
 	./pserver
 
 clean:
-	rm -f PackageServer.js
+	rm -f ./pserver.js

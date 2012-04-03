@@ -12721,11 +12721,11 @@ var self=this;
 var stream=nil;
 (stream=smalltalk.send(self['@fs'], "_createWriteStream_", [smalltalk.send(".", "__comma", [smalltalk.send(aRequest, "_url", [])])]));
 smalltalk.send(aRequest, "_setEncoding_", ["utf8"]);
-smalltalk.send(aRequest, "_on_do_", [smalltalk.symbolFor("data"), (function(data){return smalltalk.send(stream, "_write_", [data]);})]);
-smalltalk.send(aRequest, "_on_do_", [smalltalk.symbolFor("end"), (function(){smalltalk.send(stream, "_end", []);return smalltalk.send(self, "_respondOKTo_", [aResponse]);})]);
+smalltalk.send(aRequest, "_on_do_", ["data", (function(data){return smalltalk.send(stream, "_write_", [data]);})]);
+smalltalk.send(aRequest, "_on_do_", ["end", (function(){smalltalk.send(stream, "_end", []);return smalltalk.send(self, "_respondOKTo_", [aResponse]);})]);
 return self;},
 args: ["aRequest", "aResponse"],
-source: unescape('handlePUTRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20stream%20%7C%0A%09stream%20%3A%3D%20fs%20createWriteStream%3A%20%27.%27%2C%20aRequest%20url.%0A%0A%09aRequest%20setEncoding%3A%20%27utf8%27.%0A%09aRequest%20on%3A%20%23data%20do%3A%20%5B%3Adata%20%7C%20stream%20write%3A%20data%5D.%0A%0A%09aRequest%20on%3A%20%23end%20do%3A%20%5B%0A%09%09stream%20end.%0A%09%09self%20respondOKTo%3A%20aResponse%5D'),
+source: unescape('handlePUTRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20stream%20%7C%0A%09stream%20%3A%3D%20fs%20createWriteStream%3A%20%27.%27%2C%20aRequest%20url.%0A%0A%09aRequest%20setEncoding%3A%20%27utf8%27.%0A%09aRequest%20on%3A%20%27data%27%20do%3A%20%5B%3Adata%20%7C%20stream%20write%3A%20data%5D.%0A%0A%09aRequest%20on%3A%20%27end%27%20do%3A%20%5B%0A%09%09stream%20end.%0A%09%09self%20respondOKTo%3A%20aResponse%5D'),
 messageSends: ["createWriteStream:", unescape("%2C"), "url", "setEncoding:", "on:do:", "write:", "end", "respondOKTo:"],
 referencedClasses: []
 }),
@@ -13029,13 +13029,12 @@ var self=this;
 var uri=nil;
 var filename=nil;
 (uri=smalltalk.send(smalltalk.send(self['@url'], "_parse_", [smalltalk.send(aRequest, "_url", [])]), "_pathname", []));
-smalltalk.send((typeof console == 'undefined' ? nil : console), "_log_", [smalltalk.send("GET: ", "__comma", [uri])]);
 (filename=smalltalk.send(self['@path'], "_join_with_", [smalltalk.send(self, "_basePath", []), uri]));
 smalltalk.send(self['@path'], "_exists_do_", [filename, (function(boolean){return ((($receiver = boolean).klass === smalltalk.Boolean) ? (! $receiver ? (function(){return smalltalk.send(self, "_respondNotFoundTo_", [aResponse]);})() : (function(){return smalltalk.send(self, "_respondFileNamed_to_", [filename, aResponse]);})()) : smalltalk.send($receiver, "_ifFalse_ifTrue_", [(function(){return smalltalk.send(self, "_respondNotFoundTo_", [aResponse]);}), (function(){return smalltalk.send(self, "_respondFileNamed_to_", [filename, aResponse]);})]));})]);
 return self;},
 args: ["aRequest", "aResponse"],
-source: unescape('handleGETRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20uri%20filename%20%7C%0A%09uri%20%3A%3D%20%28url%20parse%3A%20aRequest%20url%29%20pathname.%0Aconsole%20log%3A%20%27GET%3A%20%27%2C%20uri.%0A%09filename%20%3A%3D%20path%20join%3A%20self%20basePath%20with%3A%20uri.%0A%09path%20exists%3A%20filename%20do%3A%20%5B%3Aboolean%20%7C%20%0A%09%09boolean%20%0A%09%09%09ifFalse%3A%20%5Bself%20respondNotFoundTo%3A%20aResponse%5D%0A%09%09%09ifTrue%3A%20%5Bself%20respondFileNamed%3A%20filename%20to%3A%20aResponse%5D%5D'),
-messageSends: ["pathname", "parse:", "url", "log:", unescape("%2C"), "join:with:", "basePath", "exists:do:", "ifFalse:ifTrue:", "respondNotFoundTo:", "respondFileNamed:to:"],
+source: unescape('handleGETRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20uri%20filename%20%7C%0A%09uri%20%3A%3D%20%28url%20parse%3A%20aRequest%20url%29%20pathname.%0A%09filename%20%3A%3D%20path%20join%3A%20self%20basePath%20with%3A%20uri.%0A%09path%20exists%3A%20filename%20do%3A%20%5B%3Aboolean%20%7C%20%0A%09%09boolean%20%0A%09%09%09ifFalse%3A%20%5Bself%20respondNotFoundTo%3A%20aResponse%5D%0A%09%09%09ifTrue%3A%20%5Bself%20respondFileNamed%3A%20filename%20to%3A%20aResponse%5D%5D'),
+messageSends: ["pathname", "parse:", "url", "join:with:", "basePath", "exists:do:", "ifFalse:ifTrue:", "respondNotFoundTo:", "respondFileNamed:to:"],
 referencedClasses: []
 }),
 smalltalk.PackageServer);
@@ -13048,15 +13047,14 @@ category: 'request handling',
 fn: function (aRequest, aResponse){
 var self=this;
 var stream=nil;
-smalltalk.send((typeof console == 'undefined' ? nil : console), "_log_", [smalltalk.send(smalltalk.send("PUT: ", "__comma", ["."]), "__comma", [smalltalk.send(aRequest, "_url", [])])]);
 (stream=smalltalk.send(self['@fs'], "_createWriteStream_", [smalltalk.send(".", "__comma", [smalltalk.send(aRequest, "_url", [])])]));
 smalltalk.send(aRequest, "_setEncoding_", ["utf8"]);
-smalltalk.send(aRequest, "_on_do_", [smalltalk.symbolFor("data"), (function(data){return smalltalk.send(stream, "_write_", [data]);})]);
-smalltalk.send(aRequest, "_on_do_", [smalltalk.symbolFor("end"), (function(){smalltalk.send(stream, "_end", []);return smalltalk.send(self, "_respondOKTo_", [aResponse]);})]);
+smalltalk.send(aRequest, "_on_do_", ["data", (function(data){return smalltalk.send(stream, "_write_", [data]);})]);
+smalltalk.send(aRequest, "_on_do_", ["end", (function(){smalltalk.send(stream, "_end", []);return smalltalk.send(self, "_respondOKTo_", [aResponse]);})]);
 return self;},
 args: ["aRequest", "aResponse"],
-source: unescape('handlePUTRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20stream%20%7C%0Aconsole%20log%3A%20%27PUT%3A%20%27%2C%20%27.%27%2C%20aRequest%20url.%0A%09stream%20%3A%3D%20fs%20createWriteStream%3A%20%27.%27%2C%20aRequest%20url.%0A%0A%09aRequest%20setEncoding%3A%20%27utf8%27.%0A%09aRequest%20on%3A%20%23data%20do%3A%20%5B%3Adata%20%7C%20stream%20write%3A%20data%5D.%0A%0A%09aRequest%20on%3A%20%23end%20do%3A%20%5B%0A%09%09stream%20end.%0A%09%09self%20respondOKTo%3A%20aResponse%5D'),
-messageSends: ["log:", unescape("%2C"), "url", "createWriteStream:", "setEncoding:", "on:do:", "write:", "end", "respondOKTo:"],
+source: unescape('handlePUTRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20stream%20%7C%0A%09stream%20%3A%3D%20fs%20createWriteStream%3A%20%27.%27%2C%20aRequest%20url.%0A%0A%09aRequest%20setEncoding%3A%20%27utf8%27.%0A%09aRequest%20on%3A%20%27data%27%20do%3A%20%5B%3Adata%20%7C%20stream%20write%3A%20data%5D.%0A%0A%09aRequest%20on%3A%20%27end%27%20do%3A%20%5B%0A%09%09stream%20end.%0A%09%09self%20respondOKTo%3A%20aResponse%5D'),
+messageSends: ["createWriteStream:", unescape("%2C"), "url", "setEncoding:", "on:do:", "write:", "end", "respondOKTo:"],
 referencedClasses: []
 }),
 smalltalk.PackageServer);
