@@ -197,14 +197,15 @@ writeJsonOn: aStream  indent: startIndent
 	indent := startIndent.
 	aStream 
 		tab: indent;
-		nextPutAll: '{'.
+		nextPutAll: '{';
+		lf.
+	indent := indent + 1.
 	aStream
-		tab: 1;
+		tab: indent;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
 		nextPutAll: '"', self name, '",';
 		lf.
-	indent := indent + 1.
 	aStream
 		tab: indent;
 		nextPutAll: '"instances" : [';
@@ -225,15 +226,12 @@ writeJsonOn: aStream  indent: startIndent
 		nextPutAll: '],';
 		lf;
 		tab: indent;
-		nextPutAll: '"properties" : {';
-		lf;
+		nextPutAll: '"properties" : ';
 		yourself.
-	aStream
-		tab: indent;
-		nextPutAll: '}';
-		lf.
+	self properties writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
 	aStream
+		lf;
 		tab: indent;
 		nextPutAll: ' }'
 ! !
@@ -479,13 +477,14 @@ writeJsonOn: aStream  indent: startIndent
 	indent := startIndent.
 	aStream 
 		tab: indent;
-		nextPutAll: '{'.
+		nextPutAll: '{';
+		lf.
+	indent := indent + 1.
 	aStream
-		tab: 1;
+		tab: indent;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
 		nextPutAll: '"', self name, '",'.
-	indent := indent + 1.
 	aStream
 		lf;
 		tab: indent;
@@ -506,17 +505,13 @@ writeJsonOn: aStream  indent: startIndent
 		nextPutAll: '],';
 		lf;
 		tab: indent;
-		nextPutAll: '"properties" : {';
-		lf;
-		yourself.
-	aStream
-		tab: indent;
-		nextPutAll: '}';
-		lf.
+		nextPutAll: '"properties" : '.
+	self properties writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
-	aStream
+	aStream 
+		lf;
 		tab: indent;
-		nextPutAll: ' }'
+		nextPutAll: '}'
 ! !
 
 !CypressPackageStructure methodsFor: 'snapshotting'!
@@ -568,18 +563,18 @@ writeCypressJsonOn: aStream  indent: startIndent
 	| indent count |
 	indent := startIndent.
 	aStream 
-		nextPutAll: '{'.
+		nextPutAll: '{';
+		lf.
 	count := 0.
 	indent := indent + 1.
 	self keysAndValuesDo: [:key :value |
 		count := count+ 1.
-		count = 1
-			ifTrue: [ aStream tab: 1 ]
-			ifFalse: [ aStream tab: indent ].
+		aStream tab: indent.
 		key writeCypressJsonOn: aStream indent: indent.
 		aStream nextPutAll: ' : '.
 		value writeCypressJsonOn: aStream indent: indent.
 		count < self size ifTrue: [ aStream nextPutAll: ','; lf ] ].
+	self size = 0 ifTrue: [ aStream tab: indent ].
 	aStream nextPutAll: ' }'
 ! !
 
@@ -601,6 +596,7 @@ writeCypressJsonOn: aStream  indent: indent
 		aStream tab: indent.
 		item writeCypressJsonOn: aStream  indent: indent.
 		index < self size ifTrue: [ aStream nextPutAll: ','; lf ]].
+	self size = 0 ifTrue: [ aStream tab: indent ].
 	aStream nextPutAll: ' ]'
 ! !
 
@@ -622,6 +618,7 @@ writeCypressJsonOn: aStream  indent: indent
 		aStream tab: indent.
 		item writeCypressJsonOn: aStream  indent: indent.
 		index < self size ifTrue: [ aStream nextPutAll: ','; lf ]].
+	self size = 0 ifTrue: [ aStream tab: indent ].
 	aStream nextPutAll: ' ]'
 ! !
 
