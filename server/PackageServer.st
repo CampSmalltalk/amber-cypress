@@ -4,18 +4,20 @@ FileServer subclass: #PackageServer
 
 !PackageServer methodsFor: 'request handling'!
 
-handleGETRequest: aRequest respondTo: aResponse
-	| uri filename |
-	uri := (url parse: aRequest url) pathname.
-	filename := path join: self basePath with: uri.
-	path exists: filename do: [:boolean | 
-		boolean 
-			ifFalse: [self respondNotFoundTo: aResponse]
-			ifTrue: [self respondFileNamed: filename to: aResponse]]
+handleRequest: aRequest respondTo: aResponse
+        aRequest method = 'PUT'
+                ifTrue: [self handlePUTRequest: aRequest respondTo: aResponse]
+                ifFalse: [self handleGETRequest: aRequest respondTo: aResponse]
+        aRequest method = 'POST'
+                ifTrue: [self handlePOSTRequest: aRequest respondTo: aResponse]
+                ifFalse: [self handleGETRequest: aRequest respondTo: aResponse]
+
 !
 
-handlePUTRequest: aRequest respondTo: aResponse
+handlePOSTRequest: aRequest respondTo: aResponse
 	| stream |
+console log: 'parse: ', (url parse: aRequest url) pathname.
+console log: 'url: ', aRequest url.
 	stream := fs createWriteStream: '.', aRequest url.
 
 	aRequest setEncoding: 'utf8'.
