@@ -611,6 +611,11 @@ snapshot
 
 !CypressPackageStructure class methodsFor: 'instance creation'!
 
+fromJson: aJsonString
+
+	^self fromJs: (Compiler new eval: '(', aJsonString , ')')
+!
+
 fromPackage: aCypressPackageDefinition
 
 	^(self new) 
