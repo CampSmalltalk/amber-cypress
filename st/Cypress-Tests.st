@@ -411,6 +411,28 @@ testLoad
 		 updatePackage: (CypressPackageDefinition new name: name)
 ! !
 
+CypressAbstractTest subclass: #CypressPackageServerTest
+	instanceVariableNames: ''
+	package: 'Cypress-Tests'!
+
+!CypressPackageServerTest methodsFor: 'tests'!
+
+testPackageServer
+	| url packageStructure stream json |
+	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
+	stream := StringStream on: String new.
+	packageStructure writeJsonOn: stream.
+	json := stream contents.
+	url := 'tests/scratch/Cypress-Mocks.json'.
+	jQuery 
+		ajax: url
+		options: #{	
+			'type' -> 'PUT'.
+			'data' -> json.
+			'contentType' -> 'text/plain;charset=UTF-8'.
+			'error' -> [window alert: 'PUT request failed at:  ', url] }
+! !
+
 CypressAbstractTest subclass: #CypressPatchTest
 	instanceVariableNames: ''
 	package: 'Cypress-Tests'!
