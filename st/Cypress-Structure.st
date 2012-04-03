@@ -208,7 +208,7 @@ writeJsonOn: aStream  indent: startIndent
 		lf.
 	aStream
 		tab: indent;
-		nextPutAll: '"instances" : [';
+		nextPutAll: '"instance" : [';
 		lf;
 		yourself.
 	methods := self instanceMethods values asArray sorted: [:a :b | a selector <= b selector].
@@ -223,7 +223,7 @@ writeJsonOn: aStream  indent: startIndent
 		yourself.
 	aStream
 		tab: indent;
-		nextPutAll: '"classes" : [';
+		nextPutAll: '"class" : [';
 		lf;
 		yourself.
 	methods := self classMethods values asArray sorted: [:a :b | a selector <= b selector].
@@ -233,10 +233,21 @@ writeJsonOn: aStream  indent: startIndent
 		index < methods size ifTrue: [ aStream nextPutAll: ','; lf ]].
 	aStream
 		tab: indent;
-		nextPutAll: '],';
+		nextPutAll: ']'.
+	self isClassExtension
+		ifFalse: [ 
+			aStream
+				nextPutAll: ',';
+				lf;
+				tab: indent;
+				nextPutAll: '"README" : ';
+				yourself.
+			self comment writeCypressJsonOn: aStream indent: indent ].
+	aStream
+		nextPutAll: ',';
 		lf;
 		tab: indent;
-		nextPutAll: '"properties" : ';
+		nextPutAll: '"properties.json" : ';
 		yourself.
 	self properties writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
@@ -396,8 +407,20 @@ writeJsonOn: aStream  indent: startIndent
 		lf.
 	aStream tab: indent.
 	self properties writeCypressJsonOn: aStream indent: indent.
+	indent := indent - 1.
 	aStream
 		lf;
+		tab: indent;
+		nextPutAll: ' }'.
+	aStream
+		nextPutAll: ',';
+		lf.
+	aStream 
+		tab: indent;
+		nextPutAll: '{';
+		lf.
+	indent := indent + 1.
+	aStream
 		tab: indent;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
@@ -558,7 +581,7 @@ writeJsonOn: aStream  indent: startIndent
 		nextPutAll: '],';
 		lf;
 		tab: indent;
-		nextPutAll: '"properties" : '.
+		nextPutAll: '"properties.json" : '.
 	self properties writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
 	aStream 

@@ -79,63 +79,112 @@ baseDefinitions
 basePackageStructureJson
 
 	^'{
-  "name" : "Cypress-Mocks.package",
-  "contents" : [
-      { "name" : "Object.extension",
-        "instance" : [
-            { "name" : "isCypressMockBasic.json", 
-              "contents" : { "category" : "*Cypress-Mocks" } },
-            { "name" : "isCypressMockBasic.st", 
-              "contents" : "isCypressMockBasic%0A%09^false"},
+	"name" : "Cypress-Mocks.package",
+	"contents" : [
+		{
+			"name" : "CypressMockBasic.class",
+			"instance" : [
+				{
+					"name" : "extra.json",
+					"contents" : 
+					{
+						"category" : "accessing" }
+				 },
+				{
+					"name" : "extra.st",
+					"contents" : "extra%0A%09%22extra%20method%22"
+				 },
+				{
+					"name" : "initialize.json",
+					"contents" : 
+					{
+						"category" : "initialization" }
+				 },
+				{
+					"name" : "initialize.st",
+					"contents" : "initialize%0A%09super%20initialize.%0A%09self%20name%3A%20%27Unknown%27"
+				 },
+				{
+					"name" : "name.json",
+					"contents" : 
+					{
+						"category" : "accessing" }
+				 },
+				{
+					"name" : "name.st",
+					"contents" : "name%0A%09%5Ename"
+				 },
+				{
+					"name" : "name..json",
+					"contents" : 
+					{
+						"category" : "accessing" }
+				 },
+				{
+					"name" : "name..st",
+					"contents" : "name%3A%20aString%0A%09name%20%3A%3D%20aString"
+				 }			],
+			"class" : [
+				{
+					"name" : "current.json",
+					"contents" : 
+					{
+						"category" : "accessing" }
+				 },
+				{
+					"name" : "current.st",
+					"contents" : "current%0A%09%5Ecurrent"
+				 },
+				{
+					"name" : "current..json",
+					"contents" : 
+					{
+						"category" : "accessing" }
+				 },
+				{
+					"name" : "current..st",
+					"contents" : "current%3A%20anObject%0A%09current%20%3A%3D%20anObject"
+				 },
+				{
+					"name" : "initialize.json",
+					"contents" : 
+					{
+						"category" : "initialization" }
+				 },
+				{
+					"name" : "initialize.st",
+					"contents" : "initialize%0A%09self%20current%3A%20self%20new"
+				 }			],
+			"README" : "This%20mock%20contains%20basic%20class%20and%20instance%20method%20selectors",
+			"properties.json" : {
+				"name" : "CypressMockBasic",
+				"super" : "Object",
+				"instvars" : [
+					"name" ],
+				"classinstvars" : [
+					"current" ] }
+		 },
+		{
+			"name" : "Object.extension",
+			"instance" : [
+				{
+					"name" : "isCypressMockBasic.json",
+					"contents" : 
+					{
+						"category" : "*Cypress-Mocks" }
+				 },
+				{
+					"name" : "isCypressMockBasic.st",
+					"contents" : "isCypressMockBasic%0A%09%5Efalse"
+				 }			],
+			"class" : [
+			],
+			"properties.json" : {
+				"name" : "Object" }
+		 }
 	],
-        "properties.json" : {
-            "name" : "Object",
-        }
-	},
-      { "name" : "CypressMockBasic.class",
-        "class" :  [
-            { "name" : "current.json", 
-              "contents" : { "category" : "accessing" }},
-            { "name" : "current.st", 
-              "contents" : "current%0A%09^current" },
-            { "name" : "current..json", 
-              "contents" : { "category" : "accessing" }} ,
-            { "name" : "current..st", 
-              "contents" : "current: anObject%0A%09current := anObject"},
-            { "name" : "initialize.json", 
-              "contents" : { "category" : "initialization"}},
-            { "name" : "initialize.st", 
-              "contents" : "initialize%0A%09self current: self new"}
-        ],
-        "instance" : [
-            { "name" : "extra.json", 
-              "contents" : { "category" : "accessing" } },
-            { "name" : "extra.st", 
-              "contents" : "extra%0A%09%22extra method%22"},
-            { "name" : "initialize.json", 
-              "contents" : { "category" : "initialization" } },
-            { "name" : "initialize.st", 
-              "contents" : "initialize%0A%09super initialize.%0A%09self name: ''Unknown''" },
-            { "name" : "name.json", 
-              "contents" : { "category" : "accessing" } } ,
-            { "name" : "name.st", 
-              "contents" : "name%0A%09^name" },
-            { "name" : "name..json", 
-              "contents" : { "category" : "accessing" } } ,
-            { "name" : "name..st", 
-              "contents" : "name: aString%0A%09name := aString" }
-        ],
-	"README" : "This mock contains basic class and instance method selectors",
-        "properties.json" : {
-            "instvars" : [ "name" ],
-            "classinstvars" : [ "current" ],
-            "name" : "CypressMockBasic",
-            "super" : "Object"
-        }
-    }
-    ],
-  "properties.json" : {
-  }
+	"properties.json" : {
+		 }
 }'
 !
 
@@ -551,7 +600,7 @@ testPackageStructureToJson
 	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
 	stream := StringStream on: String new.
 	packageStructure writeJsonOn: stream.
-	json := stream contents inspect.
+	json := stream contents.
 	self assert: self basePackageStructureJson = json
 !
 
