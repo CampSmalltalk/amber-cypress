@@ -6,19 +6,19 @@ FileServer subclass: #PackageServer
 
 handleRequest: aRequest respondTo: aResponse
         aRequest method = 'PUT'
-                ifTrue: [self handlePUTRequest: aRequest respondTo: aResponse]
-                ifFalse: [self handleGETRequest: aRequest respondTo: aResponse]
+                ifTrue: [ ^self handlePUTRequest: aRequest respondTo: aResponse ].
         aRequest method = 'POST'
-                ifTrue: [self handlePOSTRequest: aRequest respondTo: aResponse]
-                ifFalse: [self handleGETRequest: aRequest respondTo: aResponse]
+                ifTrue: [ self handlePOSTRequest: aRequest respondTo: aResponse ]
+                ifFalse: [ self handleGETRequest: aRequest respondTo: aResponse ]
 
 !
 
 handlePOSTRequest: aRequest respondTo: aResponse
-	| stream |
-console log: 'parse: ', (url parse: aRequest url) pathname.
-console log: 'url: ', aRequest url.
-	stream := fs createWriteStream: '.', aRequest url.
+	| stream path |
+	path := (url parse: aRequest url) pathname.
+	(path match: '^/PACKAGE') 
+		ifTrue: [ ^self handlePackagePOSTRequest: aRequest respondTo: aResponse ].
+	stream := fs createWriteStream: '.', path.
 
 	aRequest setEncoding: 'utf8'.
 	aRequest on: 'data' do: [:data | stream write: data].
@@ -26,6 +26,22 @@ console log: 'url: ', aRequest url.
 	aRequest on: 'end' do: [
 		stream end.
 		self respondOKTo: aResponse]
+!
+
+handlePackagePOSTRequest: aRequest respondTo: aResponse
+        | stream path |
+        path := (url parse: aRequest url) pathname.
+console log: path.
+	path := path copyFrom: '/PACKAGE' size + 1 to: path size.
+console log: path.
+        stream := fs createWriteStream: '.', path.
+
+        aRequest setEncoding: 'utf8'.
+        aRequest on: 'data' do: [:data | stream write: data].
+
+        aRequest on: 'end' do: [
+                stream end.
+                self respondOKTo: aResponse]
 ! !
 
 !PackageServer class methodsFor: 'accessing'!

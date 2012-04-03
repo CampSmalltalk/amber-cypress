@@ -17077,17 +17077,44 @@ selector: unescape('handlePOSTRequest%3ArespondTo%3A'),
 category: 'request handling',
 fn: function (aRequest, aResponse){
 var self=this;
+try{var stream=nil;
+var path=nil;
+(self['@path']=smalltalk.send(smalltalk.send(self['@url'], "_parse_", [smalltalk.send(aRequest, "_url", [])]), "_pathname", []));
+((($receiver = smalltalk.send(self['@path'], "_match_", [unescape("%5E/PACKAGE")])).klass === smalltalk.Boolean) ? ($receiver ? (function(){return (function(){throw({name: 'stReturn', selector: '_handlePOSTRequest_respondTo_', fn: function(){return smalltalk.send(self, "_handlePackagePOSTRequest_respondTo_", [aRequest, aResponse])}})})();})() : nil) : smalltalk.send($receiver, "_ifTrue_", [(function(){return (function(){throw({name: 'stReturn', selector: '_handlePOSTRequest_respondTo_', fn: function(){return smalltalk.send(self, "_handlePackagePOSTRequest_respondTo_", [aRequest, aResponse])}})})();})]));
+(stream=smalltalk.send(self['@fs'], "_createWriteStream_", [smalltalk.send(".", "__comma", [self['@path']])]));
+smalltalk.send(aRequest, "_setEncoding_", ["utf8"]);
+smalltalk.send(aRequest, "_on_do_", ["data", (function(data){return smalltalk.send(stream, "_write_", [data]);})]);
+smalltalk.send(aRequest, "_on_do_", ["end", (function(){smalltalk.send(stream, "_end", []);return smalltalk.send(self, "_respondOKTo_", [aResponse]);})]);
+return self;
+} catch(e) {if(e.name === 'stReturn' && e.selector === '_handlePOSTRequest_respondTo_'){return e.fn()} throw(e)}},
+args: ["aRequest", "aResponse"],
+source: unescape('handlePOSTRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20stream%20path%20%7C%0A%09path%20%3A%3D%20%28url%20parse%3A%20aRequest%20url%29%20pathname.%0A%09%28path%20match%3A%20%27%5E/PACKAGE%27%29%20%0A%09%09ifTrue%3A%20%5B%20%5Eself%20handlePackagePOSTRequest%3A%20aRequest%20respondTo%3A%20aResponse%20%5D.%0A%09stream%20%3A%3D%20fs%20createWriteStream%3A%20%27.%27%2C%20path.%0A%0A%09aRequest%20setEncoding%3A%20%27utf8%27.%0A%09aRequest%20on%3A%20%27data%27%20do%3A%20%5B%3Adata%20%7C%20stream%20write%3A%20data%5D.%0A%0A%09aRequest%20on%3A%20%27end%27%20do%3A%20%5B%0A%09%09stream%20end.%0A%09%09self%20respondOKTo%3A%20aResponse%5D'),
+messageSends: ["pathname", "parse:", "url", "ifTrue:", "match:", "handlePackagePOSTRequest:respondTo:", "createWriteStream:", unescape("%2C"), "setEncoding:", "on:do:", "write:", "end", "respondOKTo:"],
+referencedClasses: []
+}),
+smalltalk.PackageServer);
+
+smalltalk.addMethod(
+unescape('_handlePackagePOSTRequest_respondTo_'),
+smalltalk.method({
+selector: unescape('handlePackagePOSTRequest%3ArespondTo%3A'),
+category: 'request handling',
+fn: function (aRequest, aResponse){
+var self=this;
 var stream=nil;
-smalltalk.send((typeof console == 'undefined' ? nil : console), "_log_", [smalltalk.send("parse: ", "__comma", [smalltalk.send(smalltalk.send(self['@url'], "_parse_", [smalltalk.send(aRequest, "_url", [])]), "_pathname", [])])]);
-smalltalk.send((typeof console == 'undefined' ? nil : console), "_log_", [smalltalk.send("url: ", "__comma", [smalltalk.send(aRequest, "_url", [])])]);
-(stream=smalltalk.send(self['@fs'], "_createWriteStream_", [smalltalk.send(".", "__comma", [smalltalk.send(aRequest, "_url", [])])]));
+var path=nil;
+(self['@path']=smalltalk.send(smalltalk.send(self['@url'], "_parse_", [smalltalk.send(aRequest, "_url", [])]), "_pathname", []));
+smalltalk.send((typeof console == 'undefined' ? nil : console), "_log_", [self['@path']]);
+(self['@path']=smalltalk.send(self['@path'], "_copyFrom_to_", [((($receiver = smalltalk.send(unescape("/PACKAGE"), "_size", [])).klass === smalltalk.Number) ? $receiver +(1) : smalltalk.send($receiver, "__plus", [(1)])), smalltalk.send(self['@path'], "_size", [])]));
+smalltalk.send((typeof console == 'undefined' ? nil : console), "_log_", [self['@path']]);
+(stream=smalltalk.send(self['@fs'], "_createWriteStream_", [smalltalk.send(".", "__comma", [self['@path']])]));
 smalltalk.send(aRequest, "_setEncoding_", ["utf8"]);
 smalltalk.send(aRequest, "_on_do_", ["data", (function(data){return smalltalk.send(stream, "_write_", [data]);})]);
 smalltalk.send(aRequest, "_on_do_", ["end", (function(){smalltalk.send(stream, "_end", []);return smalltalk.send(self, "_respondOKTo_", [aResponse]);})]);
 return self;},
 args: ["aRequest", "aResponse"],
-source: unescape('handlePOSTRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%09%7C%20stream%20%7C%0Aconsole%20log%3A%20%27parse%3A%20%27%2C%20%28url%20parse%3A%20aRequest%20url%29%20pathname.%0Aconsole%20log%3A%20%27url%3A%20%27%2C%20aRequest%20url.%0A%09stream%20%3A%3D%20fs%20createWriteStream%3A%20%27.%27%2C%20aRequest%20url.%0A%0A%09aRequest%20setEncoding%3A%20%27utf8%27.%0A%09aRequest%20on%3A%20%27data%27%20do%3A%20%5B%3Adata%20%7C%20stream%20write%3A%20data%5D.%0A%0A%09aRequest%20on%3A%20%27end%27%20do%3A%20%5B%0A%09%09stream%20end.%0A%09%09self%20respondOKTo%3A%20aResponse%5D'),
-messageSends: ["log:", unescape("%2C"), "pathname", "parse:", "url", "createWriteStream:", "setEncoding:", "on:do:", "write:", "end", "respondOKTo:"],
+source: unescape('handlePackagePOSTRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%20%20%20%20%20%20%20%20%7C%20stream%20path%20%7C%0A%20%20%20%20%20%20%20%20path%20%3A%3D%20%28url%20parse%3A%20aRequest%20url%29%20pathname.%0Aconsole%20log%3A%20path.%0A%09path%20%3A%3D%20path%20copyFrom%3A%20%27/PACKAGE%27%20size%20+%201%20to%3A%20path%20size.%0Aconsole%20log%3A%20path.%0A%20%20%20%20%20%20%20%20stream%20%3A%3D%20fs%20createWriteStream%3A%20%27.%27%2C%20path.%0A%0A%20%20%20%20%20%20%20%20aRequest%20setEncoding%3A%20%27utf8%27.%0A%20%20%20%20%20%20%20%20aRequest%20on%3A%20%27data%27%20do%3A%20%5B%3Adata%20%7C%20stream%20write%3A%20data%5D.%0A%0A%20%20%20%20%20%20%20%20aRequest%20on%3A%20%27end%27%20do%3A%20%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20stream%20end.%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20self%20respondOKTo%3A%20aResponse%5D'),
+messageSends: ["pathname", "parse:", "url", "log:", "copyFrom:to:", unescape("+"), "size", "createWriteStream:", unescape("%2C"), "setEncoding:", "on:do:", "write:", "end", "respondOKTo:"],
 referencedClasses: []
 }),
 smalltalk.PackageServer);
@@ -17099,11 +17126,13 @@ selector: unescape('handleRequest%3ArespondTo%3A'),
 category: 'request handling',
 fn: function (aRequest, aResponse){
 var self=this;
-smalltalk.send(smalltalk.send(smalltalk.send(aRequest, "_method", []), "__eq", ["PUT"]), "_ifTrue_ifFalse_ifTrue_ifFalse_", [(function(){return smalltalk.send(self, "_handlePUTRequest_respondTo_", [aRequest, aResponse]);}), smalltalk.send(smalltalk.send(smalltalk.send((function(){return smalltalk.send(self, "_handleGETRequest_respondTo_", [aRequest, aResponse]);}), "_aRequest", []), "_method", []), "__eq", ["POST"]), (function(){return smalltalk.send(self, "_handlePOSTRequest_respondTo_", [aRequest, aResponse]);}), (function(){return smalltalk.send(self, "_handleGETRequest_respondTo_", [aRequest, aResponse]);})]);
-return self;},
+try{((($receiver = smalltalk.send(smalltalk.send(aRequest, "_method", []), "__eq", ["PUT"])).klass === smalltalk.Boolean) ? ($receiver ? (function(){return (function(){throw({name: 'stReturn', selector: '_handleRequest_respondTo_', fn: function(){return smalltalk.send(self, "_handlePUTRequest_respondTo_", [aRequest, aResponse])}})})();})() : nil) : smalltalk.send($receiver, "_ifTrue_", [(function(){return (function(){throw({name: 'stReturn', selector: '_handleRequest_respondTo_', fn: function(){return smalltalk.send(self, "_handlePUTRequest_respondTo_", [aRequest, aResponse])}})})();})]));
+((($receiver = smalltalk.send(smalltalk.send(aRequest, "_method", []), "__eq", ["POST"])).klass === smalltalk.Boolean) ? ($receiver ? (function(){return smalltalk.send(self, "_handlePOSTRequest_respondTo_", [aRequest, aResponse]);})() : (function(){return smalltalk.send(self, "_handleGETRequest_respondTo_", [aRequest, aResponse]);})()) : smalltalk.send($receiver, "_ifTrue_ifFalse_", [(function(){return smalltalk.send(self, "_handlePOSTRequest_respondTo_", [aRequest, aResponse]);}), (function(){return smalltalk.send(self, "_handleGETRequest_respondTo_", [aRequest, aResponse]);})]));
+return self;
+} catch(e) {if(e.name === 'stReturn' && e.selector === '_handleRequest_respondTo_'){return e.fn()} throw(e)}},
 args: ["aRequest", "aResponse"],
-source: unescape('handleRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%20%20%20%20%20%20%20%20aRequest%20method%20%3D%20%27PUT%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ifTrue%3A%20%5Bself%20handlePUTRequest%3A%20aRequest%20respondTo%3A%20aResponse%5D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ifFalse%3A%20%5Bself%20handleGETRequest%3A%20aRequest%20respondTo%3A%20aResponse%5D%0A%20%20%20%20%20%20%20%20aRequest%20method%20%3D%20%27POST%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ifTrue%3A%20%5Bself%20handlePOSTRequest%3A%20aRequest%20respondTo%3A%20aResponse%5D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ifFalse%3A%20%5Bself%20handleGETRequest%3A%20aRequest%20respondTo%3A%20aResponse%5D'),
-messageSends: ["ifTrue:ifFalse:ifTrue:ifFalse:", unescape("%3D"), "method", "handlePUTRequest:respondTo:", "aRequest", "handleGETRequest:respondTo:", "handlePOSTRequest:respondTo:"],
+source: unescape('handleRequest%3A%20aRequest%20respondTo%3A%20aResponse%0A%20%20%20%20%20%20%20%20aRequest%20method%20%3D%20%27PUT%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ifTrue%3A%20%5B%20%5Eself%20handlePUTRequest%3A%20aRequest%20respondTo%3A%20aResponse%20%5D.%0A%20%20%20%20%20%20%20%20aRequest%20method%20%3D%20%27POST%27%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ifTrue%3A%20%5B%20self%20handlePOSTRequest%3A%20aRequest%20respondTo%3A%20aResponse%20%5D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20ifFalse%3A%20%5B%20self%20handleGETRequest%3A%20aRequest%20respondTo%3A%20aResponse%20%5D'),
+messageSends: ["ifTrue:", unescape("%3D"), "method", "handlePUTRequest:respondTo:", "ifTrue:ifFalse:", "handlePOSTRequest:respondTo:", "handleGETRequest:respondTo:"],
 referencedClasses: []
 }),
 smalltalk.PackageServer);
