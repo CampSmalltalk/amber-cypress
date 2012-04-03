@@ -7,6 +7,7 @@ FileServer subclass: #PackageServer
 handleGETRequest: aRequest respondTo: aResponse
 	| uri filename |
 	uri := (url parse: aRequest url) pathname.
+console log: 'GET: ', uri.
 	filename := path join: self basePath with: uri.
 	path exists: filename do: [:boolean | 
 		boolean 
@@ -16,6 +17,7 @@ handleGETRequest: aRequest respondTo: aResponse
 
 handlePUTRequest: aRequest respondTo: aResponse
 	| stream |
+console log: 'PUT: ', '.', aRequest url.
 	stream := fs createWriteStream: '.', aRequest url.
 
 	aRequest setEncoding: 'utf8'.
@@ -24,11 +26,11 @@ handlePUTRequest: aRequest respondTo: aResponse
 	aRequest on: #end do: [
 		stream end.
 		self respondOKTo: aResponse]
-!
+! !
 
 !PackageServer class methodsFor: 'accessing'!
 
 port
         ^port ifNil: [4000]
-!
+! !
 

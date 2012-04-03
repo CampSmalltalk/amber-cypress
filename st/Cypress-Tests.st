@@ -430,7 +430,8 @@ testPackageServer
 			'type' -> 'PUT'.
 			'data' -> json.
 			'contentType' -> 'text/plain;charset=UTF-8'.
-			'error' -> [window alert: 'PUT request failed at:  ', url] }
+			'complete' -> [ :jqXHR :textStatus | Transcript cr; show: 'PUT request completed:  ', url].
+			'error' -> [ Transcript cr; show: 'PUT request failed at:  ', url ] }
 ! !
 
 CypressAbstractTest subclass: #CypressPatchTest
