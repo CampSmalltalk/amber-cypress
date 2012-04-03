@@ -193,7 +193,7 @@ fromJs: jsObject
 
 writeJsonOn: aStream  indent: startIndent
 
-	| indent |
+	| indent methods |
 	indent := startIndent.
 	aStream 
 		tab: indent;
@@ -204,13 +204,18 @@ writeJsonOn: aStream  indent: startIndent
 		tab: indent;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
-		nextPutAll: '"', self name, '",';
+		nextPutAll: '"', self name, (self isClassExtension ifTrue: [ '.extension' ] ifFalse: [ '.class' ]), '",';
 		lf.
 	aStream
 		tab: indent;
 		nextPutAll: '"instances" : [';
 		lf;
 		yourself.
+	methods := self instanceMethods values asArray sorted: [:a :b | a selector <= b selector].
+	1 to: methods size do: [:index | | methodStructure | 
+		methodStructure := methods at: index.
+		methodStructure writeJsonOn: aStream indent: indent + 1.
+		index < methods size ifTrue: [ aStream nextPutAll: ','; lf ]].
 	aStream
 		tab: indent;
 		nextPutAll: '],';
@@ -221,6 +226,11 @@ writeJsonOn: aStream  indent: startIndent
 		nextPutAll: '"classes" : [';
 		lf;
 		yourself.
+	methods := self classMethods values asArray sorted: [:a :b | a selector <= b selector].
+	1 to: methods size do: [:index | | methodStructure | 
+		methodStructure := methods at: index.
+		methodStructure writeJsonOn: aStream indent: indent + 1.
+		index < methods size ifTrue: [ aStream nextPutAll: ','; lf ]].
 	aStream
 		tab: indent;
 		nextPutAll: '],';
@@ -360,6 +370,49 @@ fromMethodDefinition: methodDefinition
 	self selector: methodDefinition selector.
 	self category: methodDefinition category.
 	self source: methodDefinition source.
+! !
+
+!CypressMethodStructure methodsFor: 'printing'!
+
+writeJsonOn: aStream  indent: startIndent
+
+	| indent |
+	indent := startIndent.
+	aStream 
+		tab: indent;
+		nextPutAll: '{';
+		lf.
+	indent := indent + 1.
+	aStream
+		tab: indent;
+		nextPutAll: '"name"';
+		nextPutAll: ' : ';
+		nextPutAll: '"', self name, '.json",';
+		lf.
+	aStream
+		tab: indent;
+		nextPutAll: '"contents"';
+		nextPutAll: ' : ';
+		lf.
+	aStream tab: indent.
+	self properties writeCypressJsonOn: aStream indent: indent.
+	aStream
+		lf;
+		tab: indent;
+		nextPutAll: '"name"';
+		nextPutAll: ' : ';
+		nextPutAll: '"', self name, '.st",';
+		lf.
+	aStream
+		tab: indent;
+		nextPutAll: '"contents"';
+		nextPutAll: ' : '.
+	self source writeCypressJsonOn: aStream indent: indent.
+	indent := indent - 1.
+	aStream
+		lf;
+		tab: indent;
+		nextPutAll: ' }'
 ! !
 
 !CypressMethodStructure class methodsFor: 'instance creation'!
