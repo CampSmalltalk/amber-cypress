@@ -189,6 +189,55 @@ fromJs: jsObject
 	comment := jsObject at: 'README' ifAbsent: ['']
 ! !
 
+!CypressClassStructure methodsFor: 'printing'!
+
+writeJsonOn: aStream  indent: startIndent
+
+	| indent |
+	indent := startIndent.
+	aStream 
+		tab: indent;
+		nextPutAll: '{'.
+	aStream
+		tab: 1;
+		nextPutAll: '"name"';
+		nextPutAll: ' : ';
+		nextPutAll: '"', self name, '",';
+		cr.
+	indent := indent + 1.
+	aStream
+		tab: indent;
+		nextPutAll: '"instances" : [';
+		cr;
+		yourself.
+	aStream
+		tab: indent;
+		nextPutAll: '],';
+		cr;
+		yourself.
+	aStream
+		tab: indent;
+		nextPutAll: '"classes" : [';
+		cr;
+		yourself.
+	aStream
+		tab: indent;
+		nextPutAll: '],';
+		cr;
+		tab: indent;
+		nextPutAll: '"properties" : {';
+		cr;
+		yourself.
+	aStream
+		tab: indent;
+		nextPutAll: '}';
+		cr.
+	indent := indent - 1.
+	aStream
+		tab: indent;
+		nextPutAll: ' }'
+! !
+
 !CypressClassStructure methodsFor: 'private'!
 
 splitMethodNameFor: jsMethodObject
@@ -431,20 +480,28 @@ writeJsonOn: aStream  indent: startIndent
 	aStream 
 		tab: indent;
 		nextPutAll: '{'.
-	indent := indent + 1.
 	aStream
-		tab: indent;
+		tab: 1;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
-		nextPutAll: '"', self name, '",';
+		nextPutAll: '"', self name, '",'.
+	indent := indent + 1.
+	aStream
 		cr;
 		tab: indent;
 		nextPutAll: '"contents" : [';
 		cr;
 		yourself.
-	self classes.
-	self extensions.
+	1 to: self classes size do: [:index | | classStructure | 
+		classStructure := self classes at: index.
+		classStructure writeJsonOn: aStream indent: indent + 1.
+		(self extensions size > 0 or: [ index < self classes size]) ifTrue: [ aStream nextPutAll: ','; cr. ]].
+	1 to: self extensions size do: [:index | | classStructure | 
+		classStructure := self extensions at: index.
+		classStructure writeJsonOn: aStream indent: indent + 1.
+		index < self extensions size ifTrue: [ aStream nextPutAll: ','; cr.] ].
 	aStream
+		cr;
 		tab: indent;
 		nextPutAll: '],';
 		cr;
