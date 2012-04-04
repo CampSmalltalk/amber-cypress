@@ -85,77 +85,35 @@ basePackageStructureJson
 			"name" : "CypressMockBasic.class",
 			"instance" : [
 				{
-					"name" : "extra.json",
-					"contents" : 
-					{
-						"category" : "accessing" }
-				 },
-				{
 					"name" : "extra.st",
-					"contents" : "extra%0A%09%22extra%20method%22"
-				 },
-				{
-					"name" : "initialize.json",
-					"contents" : 
-					{
-						"category" : "initialization" }
+					"contents" : "accessing%0Aextra%0A%09%22extra%20method%22"
 				 },
 				{
 					"name" : "initialize.st",
-					"contents" : "initialize%0A%09super%20initialize.%0A%09self%20name%3A%20%27Unknown%27"
-				 },
-				{
-					"name" : "name.json",
-					"contents" : 
-					{
-						"category" : "accessing" }
+					"contents" : "initialization%0Ainitialize%0A%09super%20initialize.%0A%09self%20name%3A%20%27Unknown%27"
 				 },
 				{
 					"name" : "name.st",
-					"contents" : "name%0A%09%5Ename"
-				 },
-				{
-					"name" : "name..json",
-					"contents" : 
-					{
-						"category" : "accessing" }
+					"contents" : "accessing%0Aname%0A%09%5Ename"
 				 },
 				{
 					"name" : "name..st",
-					"contents" : "name%3A%20aString%0A%09name%20%3A%3D%20aString"
+					"contents" : "accessing%0Aname%3A%20aString%0A%09name%20%3A%3D%20aString"
 				 }			],
 			"class" : [
 				{
-					"name" : "current.json",
-					"contents" : 
-					{
-						"category" : "accessing" }
-				 },
-				{
 					"name" : "current.st",
-					"contents" : "current%0A%09%5Ecurrent"
-				 },
-				{
-					"name" : "current..json",
-					"contents" : 
-					{
-						"category" : "accessing" }
+					"contents" : "accessing%0Acurrent%0A%09%5Ecurrent"
 				 },
 				{
 					"name" : "current..st",
-					"contents" : "current%3A%20anObject%0A%09current%20%3A%3D%20anObject"
-				 },
-				{
-					"name" : "initialize.json",
-					"contents" : 
-					{
-						"category" : "initialization" }
+					"contents" : "accessing%0Acurrent%3A%20anObject%0A%09current%20%3A%3D%20anObject"
 				 },
 				{
 					"name" : "initialize.st",
-					"contents" : "initialize%0A%09self%20current%3A%20self%20new"
+					"contents" : "initialization%0Ainitialize%0A%09self%20current%3A%20self%20new"
 				 }			],
-			"README" : "This%20mock%20contains%20basic%20class%20and%20instance%20method%20selectors",
+			"README.md" : "This%20mock%20contains%20basic%20class%20and%20instance%20method%20selectors",
 			"properties.json" : {
 				"name" : "CypressMockBasic",
 				"super" : "Object",
@@ -168,14 +126,8 @@ basePackageStructureJson
 			"name" : "Object.extension",
 			"instance" : [
 				{
-					"name" : "isCypressMockBasic.json",
-					"contents" : 
-					{
-						"category" : "*Cypress-Mocks" }
-				 },
-				{
 					"name" : "isCypressMockBasic.st",
-					"contents" : "isCypressMockBasic%0A%09%5Efalse"
+					"contents" : "*Cypress-Mocks%0AisCypressMockBasic%0A%09%5Efalse"
 				 }			],
 			"class" : [
 			],

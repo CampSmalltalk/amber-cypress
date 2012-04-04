@@ -195,7 +195,7 @@ fromJs: jsObject
 			packageStructure: self packageStructure;
 			classStructure: self;
 			fromJs: jsMethodObject named: methodNameParts ].	
-	comment := jsObject at: 'README' ifAbsent: ['']
+	comment := jsObject at: 'README.md' ifAbsent: ['']
 ! !
 
 !CypressClassStructure methodsFor: 'private'!
@@ -280,7 +280,7 @@ writeJsonOn: aStream  indent: startIndent
 				nextPutAll: ',';
 				lf;
 				tab: indent;
-				nextPutAll: '"README" : ';
+				nextPutAll: '"README.md" : ';
 				yourself.
 			self comment writeCypressJsonOn: aStream indent: indent ].
 	aStream
@@ -328,6 +328,17 @@ classStructure
 
 classStructure: aCypressClassStructure
 	classStructure := aCypressClassStructure
+!
+
+cypressSource
+
+	| stream |
+	stream := StringStream on: String new.
+	stream 
+		nextPutAll: self category;
+		lf;
+		nextPutAll: self source.
+	^stream contents
 !
 
 isMetaclass
@@ -379,9 +390,9 @@ asCypressMethodDefinition
 fromJs: jsObject  named: methodNameParts
 
 	| ext |
-	(ext := methodNameParts at: 2) = '.json'
-		ifTrue: [  properties := jsObject at: 'contents' ]
-		ifFalse: [ ext = '.st' ifTrue: [ source := jsObject at: 'contents' ] ]
+	(ext := methodNameParts at: 2) = '.st'
+		ifTrue: [  self extractCypressSource: (jsObject at: 'contents') ]
+		ifFalse: [ ext = '.json' ifTrue: [  properties := jsObject at: 'contents' ] ]
 !
 
 fromMethodDefinition: methodDefinition
@@ -390,6 +401,28 @@ fromMethodDefinition: methodDefinition
 	self selector: methodDefinition selector.
 	self category: methodDefinition category.
 	self source: methodDefinition source.
+! !
+
+!CypressMethodStructure methodsFor: 'private'!
+
+extractCypressSource: aString
+
+	| stream categoryStream sourceStream readingCategory |
+	stream := StringStream on: aString.
+	stream reset.
+	categoryStream := StringStream on: String new.
+	sourceStream := StringStream on: String new.
+	readingCategory := true.
+	[ stream atEnd] whileFalse: [ | char |
+		char := stream next.
+		readingCategory
+			ifTrue: [
+				char = String lf
+					ifTrue: [ readingCategory := false ]
+					ifFalse: [ categoryStream nextPutAll: char ]]
+			ifFalse: [ sourceStream nextPutAll: char ]].
+	self category: categoryStream contents.
+	self source: sourceStream contents
 ! !
 
 !CypressMethodStructure methodsFor: 'writing'!
@@ -407,39 +440,13 @@ writeJsonOn: aStream  indent: startIndent
 		tab: indent;
 		nextPutAll: '"name"';
 		nextPutAll: ' : ';
-		nextPutAll: '"', self name, '.json",';
-		lf.
-	aStream
-		tab: indent;
-		nextPutAll: '"contents"';
-		nextPutAll: ' : ';
-		lf.
-	aStream tab: indent.
-	self properties writeCypressJsonOn: aStream indent: indent.
-	indent := indent - 1.
-	aStream
-		lf;
-		tab: indent;
-		nextPutAll: ' }'.
-	aStream
-		nextPutAll: ',';
-		lf.
-	aStream 
-		tab: indent;
-		nextPutAll: '{';
-		lf.
-	indent := indent + 1.
-	aStream
-		tab: indent;
-		nextPutAll: '"name"';
-		nextPutAll: ' : ';
 		nextPutAll: '"', self name, '.st",';
 		lf.
 	aStream
 		tab: indent;
 		nextPutAll: '"contents"';
 		nextPutAll: ' : '.
-	self source writeCypressJsonOn: aStream indent: indent.
+	self cypressSource writeCypressJsonOn: aStream indent: indent.
 	indent := indent - 1.
 	aStream
 		lf;
