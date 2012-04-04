@@ -36,7 +36,16 @@ fromJs: jsObject
 	self subclassResponsibility
 ! !
 
-!CypressStructure methodsFor: 'printing'!
+!CypressStructure methodsFor: 'writing'!
+
+path: aFSPath file: aFilename write: writeBlock
+
+	| fs stream |
+	fs := aFSPath fs.
+	stream := fs createWriteStream: (aFSPath resolve: aFilename).
+	writeBlock value: stream.
+	stream end.
+!
 
 writeJsonOn: aStream
 
@@ -189,7 +198,38 @@ fromJs: jsObject
 	comment := jsObject at: 'README' ifAbsent: ['']
 ! !
 
-!CypressClassStructure methodsFor: 'printing'!
+!CypressClassStructure methodsFor: 'private'!
+
+splitMethodNameFor: jsMethodObject
+
+	| ext methodName |
+	methodName := jsMethodObject at: 'name'.
+	ext := '.json'.
+	(methodName match: ext, '$')
+		ifFalse: [
+			ext := '.st'.
+			(methodName match: ext, '$')
+				ifFalse: [ self error: 'invalid structure element: ', methodName ] ].
+	^{methodName copyFrom: 1 to: (methodName size - ext size). ext}
+! !
+
+!CypressClassStructure methodsFor: 'querying'!
+
+classMethodNamed: methodName
+
+	^self classMethods 
+		at: methodName 
+		ifAbsent: [ self classMethods at: methodName put: (CypressMethodStructure new name: methodName) ]
+!
+
+instanceMethodNamed: methodName
+
+	^self instanceMethods 
+		at: methodName 
+		ifAbsent: [ self instanceMethods at: methodName put: (CypressMethodStructure new name: methodName) ]
+! !
+
+!CypressClassStructure methodsFor: 'writing'!
 
 writeJsonOn: aStream  indent: startIndent
 
@@ -255,37 +295,6 @@ writeJsonOn: aStream  indent: startIndent
 		lf;
 		tab: indent;
 		nextPutAll: ' }'
-! !
-
-!CypressClassStructure methodsFor: 'private'!
-
-splitMethodNameFor: jsMethodObject
-
-	| ext methodName |
-	methodName := jsMethodObject at: 'name'.
-	ext := '.json'.
-	(methodName match: ext, '$')
-		ifFalse: [
-			ext := '.st'.
-			(methodName match: ext, '$')
-				ifFalse: [ self error: 'invalid structure element: ', methodName ] ].
-	^{methodName copyFrom: 1 to: (methodName size - ext size). ext}
-! !
-
-!CypressClassStructure methodsFor: 'querying'!
-
-classMethodNamed: methodName
-
-	^self classMethods 
-		at: methodName 
-		ifAbsent: [ self classMethods at: methodName put: (CypressMethodStructure new name: methodName) ]
-!
-
-instanceMethodNamed: methodName
-
-	^self instanceMethods 
-		at: methodName 
-		ifAbsent: [ self instanceMethods at: methodName put: (CypressMethodStructure new name: methodName) ]
 ! !
 
 !CypressClassStructure class methodsFor: 'instance creation'!
@@ -383,7 +392,7 @@ fromMethodDefinition: methodDefinition
 	self source: methodDefinition source.
 ! !
 
-!CypressMethodStructure methodsFor: 'printing'!
+!CypressMethodStructure methodsFor: 'writing'!
 
 writeJsonOn: aStream  indent: startIndent
 
@@ -545,7 +554,26 @@ fromPackage: aCypressPackageDefinition
 		self extensions add: classStructure ].
 ! !
 
-!CypressPackageStructure methodsFor: 'printing'!
+!CypressPackageStructure methodsFor: 'snapshotting'!
+
+snapshot
+	| definitions map  |
+	definitions := OrderedCollection new.
+	self classes do: [:classStructure |
+        	definitions add: classStructure asCypressClassDefinition.
+                (classStructure instanceMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ].
+                (classStructure classMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ]].
+	self extensions do: [:classStructure |
+                (classStructure instanceMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ].
+                (classStructure classMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
+			definitions add: methodStructure asCypressMethodDefinition ]].
+	^ CypressSnapshot definitions: definitions
+! !
+
+!CypressPackageStructure methodsFor: 'writing'!
 
 writeJsonOn: aStream  indent: startIndent
 
@@ -588,25 +616,6 @@ writeJsonOn: aStream  indent: startIndent
 		lf;
 		tab: indent;
 		nextPutAll: '}'
-! !
-
-!CypressPackageStructure methodsFor: 'snapshotting'!
-
-snapshot
-	| definitions map  |
-	definitions := OrderedCollection new.
-	self classes do: [:classStructure |
-        	definitions add: classStructure asCypressClassDefinition.
-                (classStructure instanceMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
-			definitions add: methodStructure asCypressMethodDefinition ].
-                (classStructure classMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
-			definitions add: methodStructure asCypressMethodDefinition ]].
-	self extensions do: [:classStructure |
-                (classStructure instanceMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
-			definitions add: methodStructure asCypressMethodDefinition ].
-                (classStructure classMethods values asArray sorted: [:a :b | a selector <= b selector]) do: [:methodStructure |
-			definitions add: methodStructure asCypressMethodDefinition ]].
-	^ CypressSnapshot definitions: definitions
 ! !
 
 !CypressPackageStructure class methodsFor: 'instance creation'!
