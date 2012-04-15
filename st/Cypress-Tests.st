@@ -267,6 +267,18 @@ targetDefinitions
         		source:'initialize
 	self current: self new')
 	}
+!
+
+validatePackage: package against: expectedDefinitions
+
+	| packageDefinitions |
+	packageDefinitions := package snapshot definitions.
+	self assert: (expectedDefinitions size = packageDefinitions size).
+	packageDefinitions do: [:def |
+		(expectedDefinitions includes: def)
+			ifFalse: [ 
+				def inspect.
+				self assert: false ]].
 ! !
 
 CypressAbstractTest subclass: #CypressDefinitionTest
@@ -369,6 +381,24 @@ CypressAbstractTest subclass: #CypressPackageServerTest
 
 !CypressPackageServerTest methodsFor: 'tests'!
 
+testPackageServerGET
+	| url packageStructure stream json |
+	url := 'tests/packages/Cypress-Mocks.package'.
+	jQuery 
+		ajax: url
+		options: #{	
+			'type' -> 'GET'.
+			'contentType' -> 'text/plain;charset=UTF-8'.
+			'complete' -> [ :jqXHR :textStatus | 
+				jqXHR readyState = 4 
+					ifTrue: [ | jsonString |
+            					jsonString := jqXHR responseText.
+ 						packageStructure := CypressPackageStructure fromJson: jsonString.
+						self validatePackage: packageStructure against: self baseDefinitions.
+						Transcript cr; show: 'GET request succeeded at:  ', url ]].
+			'error' -> [ Transcript cr; show: 'GET request failed at:  ', url ] }
+!
+
 testPackageServerPUT
 	| url packageStructure stream json |
 	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
@@ -462,15 +492,10 @@ CypressAbstractTest subclass: #CypressSnapshotTest
 !CypressSnapshotTest methodsFor: 'testing'!
 
 testSnapshot
-	| name pkg packageDefinitions expectedDefinitions |
+	| name pkg  |
 	name := 'Cypress-Mocks'.
 	pkg := CypressPackageDefinition new name: name.
-	packageDefinitions := pkg snapshot definitions.
-	expectedDefinitions := self baseDefinitions.
-	self assert: (expectedDefinitions size = packageDefinitions size).
-	packageDefinitions do: [:def |
-		(expectedDefinitions includes: def)
-			ifFalse: [ self assert: false ]].
+	self validatePackage: pkg against: self baseDefinitions
 !
 
 testSnapshotEquality
@@ -542,30 +567,16 @@ testPackageStructureFromJson
 
 testPackageStructureFromPackage
 
-	| packageStructure packageDefinitions expectedDefinitions |
+	| packageStructure |
 	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
-	packageDefinitions := packageStructure snapshot definitions.
-	expectedDefinitions := self baseDefinitions.
-	self assert: (expectedDefinitions size = packageDefinitions size).
-	packageDefinitions do: [:def |
-		(expectedDefinitions includes: def)
-			ifFalse: [ 
-				def inspect.
-				self assert: false ]].
+	self validatePackage: packageStructure against: self baseDefinitions
 !
 
 testPackageStructureSnapshot
 
-	| packageStructure packageDefinitions expectedDefinitions |
+	| packageStructure |
 	packageStructure := CypressPackageStructure fromJs: (self compileJSON: self basePackageStructureJson).
-	packageDefinitions := packageStructure snapshot definitions.
-	expectedDefinitions := self baseDefinitions.
-	self assert: (expectedDefinitions size = packageDefinitions size).
-	packageDefinitions do: [:def |
-		(expectedDefinitions includes: def)
-			ifFalse: [ 
-				def inspect.
-				self assert: false ]].
+	self validatePackage: packageStructure against: self baseDefinitions
 !
 
 testPackageStructureToJson
