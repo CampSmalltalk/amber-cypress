@@ -1,2 +1,3 @@
 # ignore all files written to scratch area
 *.json
+*.package
