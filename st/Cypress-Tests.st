@@ -379,6 +379,29 @@ testPrintString
 	self assert: 'a CypressPackageDefinition(', name, ')' equals: pkg printString.
 ! !
 
+CypressAbstractTest subclass: #CypressImportExportTest
+	instanceVariableNames: ''
+	package: 'Cypress-Tests'!
+
+!CypressImportExportTest methodsFor: 'tests'!
+
+testExport
+	| testPrefix exporter |
+	testPrefix := (AmberProjectExporter exporterForPackage: 'Cypress-Tests') prefix.
+	exporter := (CypressAmberExporter new)
+		packageName: 'Cypress-Mocks';
+		prefix: testPrefix, 'tests/scratch/'.
+	exporter export.
+!
+
+testImport
+	| testPrefix |
+	testPrefix := (AmberProjectExporter exporterForPackage: 'Cypress-Tests') prefix.
+	CypressAmberImporter
+		importCypressPackages: #('Cypress-Mocks')  
+		prefix: testPrefix, 'tests/packages/'
+! !
+
 CypressAbstractTest subclass: #CypressLoaderTest
 	instanceVariableNames: ''
 	package: 'Cypress-Tests'!
@@ -402,49 +425,6 @@ testLoad
 	name := 'Cypress-Mocks'.
 	(CypressSnapshot definitions: self targetDefinitions)
 		 updatePackage: (CypressPackageDefinition new name: name)
-! !
-
-CypressAbstractTest subclass: #CypressPackageServerTest
-	instanceVariableNames: ''
-	package: 'Cypress-Tests'!
-
-!CypressPackageServerTest methodsFor: 'tests'!
-
-testPackageServerGET
-	| url packageStructure stream json |
-	url := 'tests/packages/Cypress-Mocks.package'.
-	jQuery 
-		ajax: url
-		options: #{	
-			'type' -> 'GET'.
-			'contentType' -> 'text/plain;charset=UTF-8'.
-			'complete' -> [ :jqXHR :textStatus | 
-				jqXHR readyState = 4 
-					ifTrue: [ | jsonString |
-            					jsonString := jqXHR responseText.
- 						packageStructure := CypressPackageStructure fromJson: jsonString.
-						self validatePackage: packageStructure against: self baseDefinitions.
-						Transcript cr; show: 'GET request succeeded at:  ', url ]].
-			'error' -> [ Transcript cr; show: 'GET request failed at:  ', url ] }
-!
-
-testPackageServerPUT
-	| url packageStructure stream json |
-	packageStructure := CypressPackageStructure fromPackage: (CypressPackageDefinition new name: 'Cypress-Mocks').
-	stream := StringStream on: String new.
-	packageStructure writeJsonOn: stream.
-	json := stream contents.
-	url := 'tests/scratch'.
-	jQuery 
-		ajax: url
-		options: #{	
-			'type' -> 'PUT'.
-			'data' -> json.
-			'contentType' -> 'text/plain;charset=UTF-8'.
-			'complete' -> [ :jqXHR :textStatus | 
-				(jqXHR readyState = 4 and: [ textStatus ~= 'error' ])
-					ifTrue: [Transcript cr; show: 'PUT request completed:  ', url, ' ', textStatus ]].
-			'error' -> [ Transcript cr; show: 'PUT request failed at:  ', url ] }
 ! !
 
 CypressAbstractTest subclass: #CypressPatchTest
