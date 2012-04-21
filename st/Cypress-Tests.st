@@ -412,7 +412,9 @@ testPackageServerPUT
 			'type' -> 'PUT'.
 			'data' -> json.
 			'contentType' -> 'text/plain;charset=UTF-8'.
-			'complete' -> [ :jqXHR :textStatus | Transcript cr; show: 'PUT request completed:  ', url].
+			'complete' -> [ :jqXHR :textStatus | 
+				(jqXHR readyState = 4 and: [ textStatus ~= 'error' ])
+					ifTrue: [Transcript cr; show: 'PUT request completed:  ', url, ' ', textStatus ]].
 			'error' -> [ Transcript cr; show: 'PUT request failed at:  ', url ] }
 ! !
 
