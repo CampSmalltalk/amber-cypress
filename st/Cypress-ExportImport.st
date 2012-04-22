@@ -63,10 +63,14 @@ getCypress: ajaxUrl onSuccess: successBlock
 			'async' -> false.
     			'complete' -> [:jqXHR :textStatus | 
 			jqXHR readyState = 4 ifTrue: [ | packageStructure |
-				packageStructure := CypressPackageStructure fromJson: jqXHR responseText readStream.
+Transcript cr; show: '1'.
+				packageStructure := CypressPackageStructure fromJson: jqXHR responseText.
+Transcript cr; show: '2'.
 				packageStructure snapshot
-		 			updatePackage: (CypressPackageDefinition new name: packageStructure name)
-				successBlock value  ]].
+		 			updatePackage: (CypressPackageDefinition new name: packageStructure packageName).
+Transcript cr; show: '3'.
+				successBlock value.
+Transcript cr; show: 4  ]].
  			'error' -> [window alert: 'getCypress request failed at:  ', ajaxUrl]
 		}
 ! !

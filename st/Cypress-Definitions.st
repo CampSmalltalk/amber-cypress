@@ -178,7 +178,7 @@ createClass
 	^ClassBuilder new
 		superclass: superClass 
 		subclass: self name
-		instanceVariableNames: self instVarNames 
+		instanceVariableNames: (self stringForVariables: self instVarNames)
 		package: self category
 !
 
@@ -186,7 +186,7 @@ loadClassDefinition
 
 	 | cls |
 	cls := self createClass.
-	cls class instanceVariableNames: self classInstanceVariablesString.
+	cls class instanceVariableNames: (self stringForVariables: self classInstVarNames).
 	self comment notEmpty ifTrue: [ cls comment: self comment ]
 !
 
@@ -207,6 +207,14 @@ printString
 		nextPutAll: self name;
 		nextPutAll: ')'.
 	^str contents
+!
+
+stringForVariables: aCollectionOfVariableNames
+	^ String streamContents:
+		[:stream |
+		aCollectionOfVariableNames
+			do: [:ea | stream nextPutAll: ea]
+			separatedBy: [stream space]]
 ! !
 
 !CypressClassDefinition methodsFor: 'visiting'!
@@ -594,6 +602,12 @@ applyRemoval: aCypressPatchOperation
 	self removals add: aCypressPatchOperation
 ! !
 
+!CypressLoader methodsFor: 'error handling'!
+
+handleErrorFor: aPatchOperation during: aBlock
+	aBlock on: Error do: [:ex | self halt errors add: aPatchOperation ].
+! !
+
 !CypressLoader methodsFor: 'loading'!
 
 analyze
@@ -653,11 +667,16 @@ updatePackage: aPackage withSnapshot: aSnapshot
 
 loadClassDefinition: aPatchOperation
 
-	[ aPatchOperation loadClassDefinition ] on: Error do: [ self errors add: aPatchOperation ].
+	self 
+		handleErrorFor: aPatchOperation 
+		during: [ aPatchOperation loadClassDefinition ]
 !
 
 loadMethodDefinition: aPatchOperation
-	[ aPatchOperation loadMethodDefinition ] on: Error do: [ self errors add: aPatchOperation ].
+	
+	self 
+		handleErrorFor: aPatchOperation 
+		during: [ aPatchOperation loadMethodDefinition ]
 !
 
 postLoad: aPatchOperation
@@ -665,7 +684,10 @@ postLoad: aPatchOperation
 !
 
 unloadDefinition: aPatchOperation
-	[ aPatchOperation unloadDefinition ] on: Error do: [ self errors add: aPatchOperation ].
+	
+	self 
+		handleErrorFor: aPatchOperation 
+		during: [ aPatchOperation unloadDefinition ]
 ! !
 
 !CypressLoader class methodsFor: 'loading'!
