@@ -605,7 +605,7 @@ applyRemoval: aCypressPatchOperation
 !CypressLoader methodsFor: 'error handling'!
 
 handleErrorFor: aPatchOperation during: aBlock
-	aBlock on: Error do: [:ex | self halt errors add: aPatchOperation ].
+	aBlock on: Error do: [:ex | self errors add: aPatchOperation ].
 ! !
 
 !CypressLoader methodsFor: 'loading'!

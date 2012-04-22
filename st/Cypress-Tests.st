@@ -388,6 +388,17 @@ CypressAbstractTest subclass: #CypressImportExportTest
 	instanceVariableNames: ''
 	package: 'Cypress-Tests'!
 
+!CypressImportExportTest methodsFor: 'running'!
+
+tearDown
+
+	| name |
+	super tearDown.
+	name := 'Cypress-Mocks'.
+	(CypressSnapshot definitions: self baseDefinitions)
+		 updatePackage: (CypressPackageDefinition new name: name)
+! !
+
 !CypressImportExportTest methodsFor: 'tests'!
 
 testExport
@@ -409,8 +420,7 @@ testImport
 
 testPharoJson
 
-	| json |
-	json := MCFileTreeJsonParser parse:'{
+	self compileJSON: '{
 	"name" : "Cypress-Mocks.package",
 	"contents" : [
 		{
@@ -467,6 +477,15 @@ testPharoJson
 				"name" : "Object" }
 		 }
 	],
+	"properties.json" : {
+		 }
+}'.
+!
+
+testPharoJsonx
+
+	self compileJSON: '{
+	"name" : "Cypress-Mocks.package",
 	"properties.json" : {
 		 }
 }'.
