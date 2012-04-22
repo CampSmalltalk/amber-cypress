@@ -15,7 +15,7 @@ exportPackageStructure
 	stream := StringStream on: String new.
 	packageStructure writeJsonOn: stream.
 	self 
-		ajaxPutAt: self prefix, self packageName, '.json'
+		ajaxPutAt: 'CYPRESS_PACKAGE/', self prefix
 		data: stream contents
 ! !
 
@@ -57,7 +57,7 @@ get: type url: ajaxUrl onSuccess: successBlock
 getCypress: ajaxUrl onSuccess: successBlock
 
 	jQuery 
-		ajax: ajaxUrl
+		ajax: 'CYPRESS_PACKAGE/', ajaxUrl
         	options: #{
 			'type' -> 'GET'.
 			'async' -> false.
