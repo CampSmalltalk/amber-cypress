@@ -149,7 +149,7 @@ provisions
 requirements
 	"Answer list of global names required by this definition"
 
-	^{self name}
+	^{self superclassName}
 ! !
 
 !CypressClassDefinition methodsFor: 'initialization'!
@@ -467,10 +467,10 @@ externalRequirements
 !
 
 itemsWithMissingRequirements
-	| patchOperations |
-	patchOperations := Set new.
-	self required values do: [:aSetOfPatchOperations | patchOperations addAll: aSetOfPatchOperations ].
-	^ patchOperations
+   | patchOperations |
+   patchOperations := Set new.
+   self required values do: [:aSetOfPatchOperations | patchOperations addAll: aSetOfPatchOperations ].
+  ^ patchOperations
 !
 
 orderedItems
@@ -606,6 +606,19 @@ applyRemoval: aCypressPatchOperation
 
 handleErrorFor: aPatchOperation during: aBlock
 	aBlock on: Error do: [:ex | self errors add: aPatchOperation ].
+!
+
+unloadableDefinitionsError
+
+	| globals definitions |
+ 	globals := StringStream on: String new.
+	definitions := Set new.
+	self unloadable keysAndValuesDo: [:globalName :defs | 
+		globals nextPutAll: globalName, ' '.
+		definitions addAll: defs ].
+	definitions := definitions asArray.
+	definitions inspect.
+	self error: 'Required global: ', globals contents printString, ' must be defined before definitions: ', definitions printString, ' can be loaded'.
 ! !
 
 !CypressLoader methodsFor: 'loading'!
@@ -626,7 +639,7 @@ analyzeAdditions
 		yourself.
 	additions := sorter orderedItems.
 	requirements := sorter externalRequirements.
-	unloadable := sorter itemsWithMissingRequirements.
+	unloadable := sorter required
 !
 
 analyzeRemovals
@@ -729,6 +742,7 @@ printString
 snapshot
 	| package definitions name map  |
 	package := Package named: self name.
+	package ifNil: [ package := Smalltalk current createPackage: self name ].
 	definitions := OrderedCollection new.
 	package sortedClasses do: [:cls |
         	definitions add: cls asCypressClassDefinition.
