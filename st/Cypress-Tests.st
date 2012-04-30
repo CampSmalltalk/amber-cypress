@@ -428,7 +428,7 @@ testIssue2
 		prefix: testPrefix, 'tests/packages/'.
 	issue2Class := Smalltalk current at: 'CypressIssue2'.
 	comment := issue2Class comment.
-	methodSource := (issue2Class methodAt: 'newReference') source.
+	methodSource := (issue2Class methodAt: 'issue2') source.
    	"export to scratch directory"
 	exporter := (CypressAmberExporter new)
 		packageName: 'Cypress-Issue2';
@@ -440,7 +440,7 @@ testIssue2
 		prefix: testPrefix, 'tests/scratch/'.
 	"validate"
 	self assert: comment = issue2Class comment.
-	self assert: methodSource = (issue2Class methodAt: 'newReference') source.
+	self assert: methodSource = (issue2Class methodAt: 'issue2') source.
 !
 
 testPharoJson

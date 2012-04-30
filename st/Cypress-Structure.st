@@ -727,10 +727,16 @@ asCypressPropertyObject
 !
 
 writeCypressJsonOn: aStream  indent: startIndent
-
+	"special case $+ for Issue #2"
+	| strm |
+	strm := StringStream on: String new.
+	self escaped do: [:ch |
+		ch = '+'
+			ifTrue: [ strm nextPutAll: '%2B' ]
+			ifFalse: [ strm nextPut: ch ]].
 	aStream 
 		nextPutAll: '"';
-		nextPutAll: self escaped;
+		nextPutAll: strm contents;
 		nextPutAll: '"'
 ! !
 
