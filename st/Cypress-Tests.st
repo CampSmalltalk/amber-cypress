@@ -140,6 +140,70 @@ basePackageStructureJson
 }'
 !
 
+basePackageStructureUriEncodedJson
+
+	^'{
+	"name" : "Cypress-Mocks.package",
+	"contents" : [
+		{
+			"name" : "CypressMockBasic.class",
+			"instance" : [
+				{
+					"name" : "extra.st",
+					"contents" : "accessing%0Aextra%0A%09%22extra%20method%22"
+				 },
+				{
+					"name" : "initialize.st",
+					"contents" : "initialization%0Ainitialize%0A%09super%20initialize.%0A%09self%20name%3A%20''Unknown''"
+				 },
+				{
+					"name" : "name.st",
+					"contents" : "accessing%0Aname%0A%09%5Ename"
+				 },
+				{
+					"name" : "name..st",
+					"contents" : "accessing%0Aname%3A%20aString%0A%09name%20%3A%3D%20aString"
+				 }			],
+			"class" : [
+				{
+					"name" : "current.st",
+					"contents" : "accessing%0Acurrent%0A%09%5Ecurrent"
+				 },
+				{
+					"name" : "current..st",
+					"contents" : "accessing%0Acurrent%3A%20anObject%0A%09current%20%3A%3D%20anObject"
+				 },
+				{
+					"name" : "initialize.st",
+					"contents" : "initialization%0Ainitialize%0A%09self%20current%3A%20self%20new"
+				 }			],
+			"README.md" : "%23%23%20Class%20Comment%0A%0AThis%20mock%20contains%20basic%20class%20and%20instance%20method%20selectors.%0A%0A%20%5B**GitHub%20Flabored%20Markdown**%5D%5B1%5D%20with%20**Smalltalk**%20sytax%20*highlighting*%3A%0A%0A%60%60%60Smalltalk%0Ainitialize%0A%09super%20initialize.%0A%09self%20name%3A%20''Unknown''%0A%60%60%60%0A%0AAnd%20some%20%5BUTF8%20samples%5D%5B2%5D%3A%20%0A%0A%60%60%60%0A%20%20Lithuanian%3A%20A%C5%A1%20galiu%20valgyti%20stikl%C4%85%20ir%20jis%20man%C4%99s%20ne%C5%BEeid%C5%BEia%0A%20%20Russian%3A%20%D0%AF%20%D0%BC%D0%BE%D0%B3%D1%83%20%D0%B5%D1%81%D1%82%D1%8C%20%D1%81%D1%82%D0%B5%D0%BA%D0%BB%D0%BE%2C%20%D0%BE%D0%BD%D0%BE%20%D0%BC%D0%BD%D0%B5%20%D0%BD%D0%B5%20%D0%B2%D1%80%D0%B5%D0%B4%D0%B8%D1%82.%0A%20%20Korean%3A%20%EB%82%98%EB%8A%94%20%EC%9C%A0%EB%A6%AC%EB%A5%BC%20%EB%A8%B9%EC%9D%84%20%EC%88%98%20%EC%9E%88%EC%96%B4%EC%9A%94.%20%EA%B7%B8%EB%9E%98%EB%8F%84%20%EC%95%84%ED%94%84%EC%A7%80%20%EC%95%8A%EC%95%84%EC%9A%94%0A%20%20Hebrew%3A%20%D7%90%D7%A0%D7%99%20%D7%99%D7%9B%D7%95%D7%9C%20%D7%9C%D7%90%D7%9B%D7%95%D7%9C%20%D7%96%D7%9B%D7%95%D7%9B%D7%99%D7%AA%20%D7%95%D7%96%D7%94%20%D7%9C%D7%90%20%D7%9E%D7%96%D7%99%D7%A7%20%D7%9C%D7%99.%0A%20%20Latin%3A%20Vitrum%20edere%20possum%3B%20mihi%20non%20nocet.%0A%60%60%60%0A%0A%0A%5B1%5D%3A%20http%3A%2F%2Fgithub.github.com%2Fgithub-flavored-markdown%2F%0A%5B2%5D%3A%20http%3A%2F%2Fwww.columbia.edu%2F~fdc%2Futf8%2F",
+			"properties.json" : {
+				"name" : "CypressMockBasic",
+				"super" : "Object",
+				"instvars" : [
+					"name" ],
+				"classinstvars" : [
+					"current" ] }
+		 },
+		{
+			"name" : "Object.extension",
+			"instance" : [
+				{
+					"name" : "isCypressMockBasic.st",
+					"contents" : "*Cypress-Mocks%0AisCypressMockBasic%0A%09%5Efalse"
+				 }			],
+			"class" : [
+			],
+			"properties.json" : {
+				"name" : "Object" }
+		 }
+	],
+	"properties.json" : {
+		 }
+}'
+!
+
 baseTargetPatch
 	| className |
 	className := 'CypressMockBasic'.
@@ -695,7 +759,7 @@ testPackageStructureToJson
 	stream := StringStream on: String new.
 	packageStructure writeJsonOn: stream.
 	json := stream contents.
-	self assert: self basePackageStructureJson = json
+	self assert: self basePackageStructureUriEncodedJson = json
 !
 
 testPropertyDictionaryRead
