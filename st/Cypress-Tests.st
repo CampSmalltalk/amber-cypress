@@ -418,6 +418,31 @@ testImport
 		prefix: testPrefix, 'tests/packages/'
 !
 
+testIssue2
+
+	| testPrefix exporter issue2Class comment methodSource |
+	"load with correct package definitions"
+	testPrefix := (AmberProjectExporter exporterForPackage: 'Cypress-Tests') prefix.
+	CypressAmberImporter
+		importCypressPackages: #('Cypress-Issue2')  
+		prefix: testPrefix, 'tests/packages/'.
+	issue2Class := Smalltalk current at: 'CypressIssue2'.
+	comment := issue2Class comment.
+	methodSource := (issue2Class methodAt: 'newReference') source.
+   	"export to scratch directory"
+	exporter := (CypressAmberExporter new)
+		packageName: 'Cypress-Issue2';
+		prefix: testPrefix, 'tests/scratch/'.
+	exporter export.	
+ 	"reload from scratch ... ensure that we haven't lost the $+ characters"
+	CypressAmberImporter
+		importCypressPackages: #('Cypress-Issue2')  
+		prefix: testPrefix, 'tests/scratch/'.
+	"validate"
+	self assert: comment = issue2Class comment.
+	self assert: methodSource = (issue2Class methodAt: 'newReference') source.
+!
+
 testPharoJson
 
 	self compileJSON: '{
