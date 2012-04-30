@@ -726,15 +726,11 @@ asCypressPropertyObject
 	^self unescaped
 !
 
-encodeURIComponent
-	<return encodeURIComponent(self)>
-!
-
 writeCypressJsonOn: aStream  indent: startIndent
 
 	aStream 
 		nextPutAll: '"';
-		nextPutAll: self encodeURIComponent;
+		nextPutAll: self escaped;
 		nextPutAll: '"'
 ! !
 
