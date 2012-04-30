@@ -480,15 +480,6 @@ testPharoJson
 	"properties.json" : {
 		 }
 }'.
-!
-
-testPharoJsonx
-
-	self compileJSON: '{
-	"name" : "Cypress-Mocks.package",
-	"properties.json" : {
-		 }
-}'.
 ! !
 
 CypressAbstractTest subclass: #CypressLoaderTest

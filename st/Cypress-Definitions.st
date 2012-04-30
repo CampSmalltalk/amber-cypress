@@ -610,15 +610,14 @@ handleErrorFor: aPatchOperation during: aBlock
 
 unloadableDefinitionsError
 
-	| globals definitions |
+	| globals defMap |
  	globals := StringStream on: String new.
-	definitions := Set new.
-	self unloadable keysAndValuesDo: [:globalName :defs | 
+	defMap := Dictionary new.
+	self unloadable keysAndValuesDo: [:globalName :defSet | 
 		globals nextPutAll: globalName, ' '.
-		definitions addAll: defs ].
-	definitions := definitions asArray.
-	definitions inspect.
-	self error: 'Required global: ', globals contents printString, ' must be defined before definitions: ', definitions printString, ' can be loaded'.
+		defMap at: globalName put: defSet asArray ].
+	defMap inspect. "for ease of debugging"
+	self error: 'Required global: ', globals contents printString, ' must be defined before definitions can be loaded'.
 ! !
 
 !CypressLoader methodsFor: 'loading'!
@@ -757,7 +756,7 @@ snapshot
 		{each. each class} do: [:aClass |
 			map := Dictionary new.
 			aClass protocolsDo: [:category :methods | 
-				(category match: '^\*', name) ifTrue: [ map at: category put: methods ]].
+				(category asLowercase match: '^\*', name asLowercase) ifTrue: [ map at: category put: methods ]].
 			(map keys sorted: [:a :b | a <= b ])  do: [:category | 
 				((map at: category) sorted: [:a :b | a selector <= b selector]) do: [:method |  definitions add: method asCypressMethodDefinition ]]]].
 	^ CypressSnapshot definitions: definitions
